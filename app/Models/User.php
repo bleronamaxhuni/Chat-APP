@@ -42,6 +42,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_seen_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -56,11 +57,13 @@ class User extends Authenticatable
         return $this->hasMany(Friendship::class, 'addressee_id');
     }
 
-    public function conversations(){
+    public function conversations()
+    {
         return $this->belongsToMany(Conversation::class);
     }
 
-    public function messages(){
+    public function messages()
+    {
         return $this->hasMany(Message::class, 'sender_id');
     }
 }

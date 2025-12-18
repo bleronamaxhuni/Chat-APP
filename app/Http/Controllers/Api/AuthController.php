@@ -45,12 +45,14 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
+        $user->forceFill(['last_seen_at' => now()])->save();
         $request->session()->regenerate();
 
         return response()->json([
             'message' => 'Registration successful',
         ]);
     }
+    
 
 
     public function login(Request $request)
@@ -60,15 +62,15 @@ class AuthController extends Controller
             'password' => 'required|string'
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!Auth::attempt($request->only('email', 'password'))) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
         $request->session()->regenerate();
+
+        $request->user()->forceFill(['last_seen_at' => now()])->save();
 
         return response()->json([
             'message' => 'Login successful',
@@ -89,6 +91,11 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        return $request->user();
+        $user = $request->user();
+        if ($user) {
+            $user->forceFill(['last_seen_at' => now()])->save();
+        }
+
+        return response()->json($user);
     }
 }

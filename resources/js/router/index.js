@@ -15,8 +15,13 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()
+
+  // Ensure we have attempted to load the current user before enforcing guards
+  if (!auth.initialized) {
+    await auth.fetchUser()
+  }
 
   if (to.meta.auth && !auth.isAuthenticated) return next('/login')
   if (to.meta.guest && auth.isAuthenticated) return next('/')

@@ -4,6 +4,7 @@ import api from '../services/api'
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
+    initialized: false,
   }),
   getters: {
     isAuthenticated: state => !!state.user,
@@ -15,6 +16,8 @@ export const useAuthStore = defineStore('auth', {
         this.user = res.data
       } catch {
         this.user = null
+      } finally {
+        this.initialized = true
       }
     },
 
