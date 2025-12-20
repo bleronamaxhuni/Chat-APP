@@ -3,9 +3,7 @@
     <!-- Post Header -->
     <div class="flex items-center justify-between mb-3">
       <div class="flex items-center gap-2">
-        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-          {{ post.user.name.charAt(0).toUpperCase() }}
-        </div>
+        <Avatar :user="post.user" size="md" />
         <div>
           <h4 class="font-semibold">{{ post.user.name }}</h4>
           <p class="text-xs text-gray-500">{{ formatDate(post.created_at) }}</p>
@@ -92,6 +90,7 @@ import { ref } from 'vue'
 import PostForm from './PostForm.vue'
 import CommentList from './CommentList.vue'
 import CommentForm from './CommentForm.vue'
+import Avatar from '../common/Avatar.vue'
 import { useAuthStore } from '../../stores/auth'
 import { useClickOutside } from '../../composables/useClickOutside'
 import api from '../../services/api'

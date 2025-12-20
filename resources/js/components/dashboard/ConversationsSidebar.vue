@@ -21,11 +21,10 @@
             @click="openConversation(conv.id, conv.user_id)"
             class="flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer transition-colors"
           >
-            <img 
-              class="w-10 h-10 rounded-full mr-3 object-cover flex-shrink-0" 
-              :src="getAvatarUrl(conv.email || conv.name)" 
-              :alt="conv.name"
-              @error="handleImageError"
+            <Avatar
+              :user="conv"
+              size="md"
+              class="mr-3 flex-shrink-0"
             />
             <div class="flex-1 min-w-0">
               <div class="flex items-center justify-between">
@@ -54,12 +53,10 @@
             @click="openConversationWithFriend(friend)"
             class="flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer transition-colors"
           >
-            <div class="relative flex-shrink-0">
-              <img 
-                class="w-10 h-10 rounded-full mr-3 object-cover" 
-                :src="getAvatarUrl(friend.email || friend.name)" 
-                :alt="friend.name"
-                @error="handleImageError"
+            <div class="relative flex-shrink-0 mr-3">
+              <Avatar
+                :user="friend"
+                size="md"
               />
               <span 
                 v-if="isOnline(friend.last_seen_at)"
@@ -87,6 +84,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import api from '../../services/api'
+import Avatar from '../common/Avatar.vue'
 
 const props = defineProps({
   isOpen: {
@@ -101,19 +99,6 @@ const conversations = ref([])
 const friends = ref([])
 const loading = ref(false)
 
-const getAvatarUrl = (identifier) => {
-  if (!identifier) return 'https://i.pravatar.cc/150?img=1'
-  const hash = identifier.split('').reduce((acc, char) => {
-    return char.charCodeAt(0) + ((acc << 5) - acc)
-  }, 0)
-  const index = Math.abs(hash % 10) + 1
-  return `https://i.pravatar.cc/150?img=${index}`
-}
-
-const handleImageError = (event) => {
-  event.target.src = 'https://i.pravatar.cc/150?img=1'
-}
-
 const isOnline = (lastSeenAt) => {
   if (!lastSeenAt) return false
   const lastSeen = new Date(lastSeenAt)
@@ -125,10 +110,7 @@ const isOnline = (lastSeenAt) => {
 const loadConversations = async () => {
   try {
     const res = await api.get('/conversations')
-    conversations.value = res.data.map(conv => ({
-      ...conv,
-      photo: getAvatarUrl(conv.email || conv.name),
-    }))
+    conversations.value = res.data
   } catch (error) {
     console.error('Failed to load conversations:', error)
     conversations.value = []
@@ -139,12 +121,7 @@ const loadFriends = async () => {
   try {
     const res = await api.get('/conversations/friends')
     const conversationUserIds = new Set(conversations.value.map(c => c.user_id))
-    friends.value = res.data
-      .filter(friend => !conversationUserIds.has(friend.id))
-      .map(friend => ({
-        ...friend,
-        photo: getAvatarUrl(friend.email || friend.name),
-      }))
+    friends.value = res.data.filter(friend => !conversationUserIds.has(friend.id))
   } catch (error) {
     console.error('Failed to load friends:', error)
     friends.value = []
@@ -170,6 +147,7 @@ const openConversation = async (conversationId, userId) => {
         userId,
         userName: conversation?.name || 'Friend',
         userEmail: conversation?.email || null,
+        profile_image: conversation?.profile_image || null,
         messages: res.data,
       })
     } else {
@@ -179,6 +157,7 @@ const openConversation = async (conversationId, userId) => {
         userId: res.data.conversation.user_id,
         userName: res.data.conversation.name,
         userEmail: res.data.conversation.email,
+        profile_image: res.data.conversation.profile_image || null,
         messages: res.data.messages,
       })
       await loadData()
@@ -196,6 +175,7 @@ const openConversationWithFriend = async (friend) => {
       userId: res.data.conversation.user_id,
       userName: friend.name,
       userEmail: friend.email,
+      profile_image: friend.profile_image || null,
       messages: res.data.messages,
     })
     await loadData()

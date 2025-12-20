@@ -30,6 +30,7 @@ class CommentController extends Controller
             'user' => [
                 'id' => $comment->user->id,
                 'name' => $comment->user->name,
+                'profile_image' => $comment->user->profile_image,
             ],
         ], 201);
     }
@@ -57,6 +58,7 @@ class CommentController extends Controller
             'user' => [
                 'id' => $comment->user->id,
                 'name' => $comment->user->name,
+                'profile_image' => $comment->user->profile_image,
             ],
         ]);
     }

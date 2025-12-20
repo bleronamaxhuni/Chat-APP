@@ -36,6 +36,7 @@ class ConversationController extends Controller
                     'user_id' => $otherUser ? $otherUser->id : null,
                     'name' => $otherUser ? $otherUser->name : 'Unknown',
                     'email' => $otherUser ? $otherUser->email : null,
+                    'profile_image' => $otherUser ? $otherUser->profile_image : null,
                     'lastMessage' => $lastMessage ? $lastMessage->message : null,
                     'lastMessageAt' => $lastMessage ? $lastMessage->created_at : null,
                     'unreadCount' => $conversation->messages()
@@ -72,6 +73,7 @@ class ConversationController extends Controller
                 'id' => $friend->id,
                 'name' => $friend->name,
                 'email' => $friend->email,
+                'profile_image' => $friend->profile_image,
                 'last_seen_at' => $friend->last_seen_at,
             ];
         });
@@ -137,6 +139,7 @@ class ConversationController extends Controller
                 'user_id' => $otherUser->id,
                 'name' => $otherUser->name,
                 'email' => $otherUser->email,
+                'profile_image' => $otherUser->profile_image,
             ],
             'messages' => $messages,
         ]);

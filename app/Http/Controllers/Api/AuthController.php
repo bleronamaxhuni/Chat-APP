@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -97,5 +98,27 @@ class AuthController extends Controller
         }
 
         return response()->json($user);
+    }
+
+    public function updateProfileImage(Request $request)
+    {
+        $request->validate([
+            'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = $request->user();
+
+        if ($user->profile_image && Storage::disk('public')->exists($user->profile_image)) {
+            Storage::disk('public')->delete($user->profile_image);
+        }
+
+        $imagePath = $request->file('profile_image')->store('profile_images', 'public');
+        $user->profile_image = $imagePath;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Profile image updated successfully',
+            'profile_image' => Storage::url($imagePath),
+        ]);
     }
 }

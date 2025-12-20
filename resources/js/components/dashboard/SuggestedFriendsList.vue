@@ -8,7 +8,7 @@
         class="flex items-center justify-between bg-gray-100 p-2 rounded hover:bg-gray-200"
       >
         <div class="flex items-center space-x-2">
-          <img class="w-8 h-8 rounded-full" :src="friend.photo" alt="Friend photo" />
+          <Avatar :user="friend" size="sm" />
           <span>{{ friend.name }}</span>
         </div>
         <button @click="$emit('addFriend', friend)" class="text-sm text-blue-500 hover:underline">
@@ -20,6 +20,8 @@
 </template>
 
 <script setup>
+import Avatar from '../common/Avatar.vue'
+
 defineProps({
   friends: {
     type: Array,

@@ -33,7 +33,7 @@ class FriendshipController extends Controller
             ->whereNotIn('id', $friendIds)
             ->where('last_seen_at', '>=', Carbon::yesterday())
             ->take(20)
-            ->get(['id', 'name', 'email', 'last_seen_at']);
+            ->get(['id', 'name', 'email', 'profile_image', 'last_seen_at']);
 
 
         return response()->json($suggested);

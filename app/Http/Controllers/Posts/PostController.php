@@ -21,8 +21,8 @@ class PostController extends Controller
             ->where('status', 'accepted')
             ->get()
             ->map(function ($friendship) use ($user) {
-                return $friendship->requester_id === $user->id 
-                    ? $friendship->addressee_id 
+                return $friendship->requester_id === $user->id
+                    ? $friendship->addressee_id
                     : $friendship->requester_id;
             })
             ->push($user->id); // Include own posts
@@ -41,6 +41,7 @@ class PostController extends Controller
                         'id' => $post->user->id,
                         'name' => $post->user->name,
                         'email' => $post->user->email,
+                        'profile_image' => $post->user->profile_image,
                     ],
                     'likes_count' => $post->likes->count(),
                     'is_liked' => $post->likes->contains('user_id', $user->id),
@@ -52,6 +53,7 @@ class PostController extends Controller
                             'user' => [
                                 'id' => $comment->user->id,
                                 'name' => $comment->user->name,
+                                'profile_image' => $comment->user->profile_image,
                             ],
                         ];
                     }),

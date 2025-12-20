@@ -83,7 +83,7 @@ const logout = async () => {
 const profile = computed(() => ({
   name: auth.user?.name,
   email: auth.user?.email,
-  photo: 'https://i.pravatar.cc/150?img=3',
+  profile_image: auth.user?.profile_image,
 }))
 
 const suggestedFriends = ref([])
@@ -97,10 +97,10 @@ const handleOpenChat = (chatData) => {
     userId: chatData.userId,
     userName: chatData.userName || 'Friend',
     userEmail: chatData.userEmail || null,
+    profile_image: chatData.profile_image || null,
     messages: chatData.messages || [],
   }
   showChatWindow.value = true
-  // Keep conversations sidebar open so chat appears next to it
 }
 
 const closeChatWindow = () => {
@@ -153,10 +153,7 @@ onMounted(async () => {
     const res = await api.get('/friendships/suggested', {
       params: { online_only: 1 },
     })
-    suggestedFriends.value = res.data.map((user, index) => ({
-      ...user,
-      photo: `https://i.pravatar.cc/150?img=${(index % 10) + 1}`,
-    }))
+    suggestedFriends.value = res.data
   } catch (e) {
     console.error('Failed to load suggested friends', e)
   }

@@ -10,11 +10,9 @@
     @click="toggleMinimize"
   >
     <div class="flex items-center gap-3 flex-1 min-w-0">
-      <img
-        :src="getAvatarUrl(chatData.userEmail || chatData.userName)"
-        :alt="chatData.userName"
-        class="w-8 h-8 rounded-full object-cover flex-shrink-0"
-        @error="handleImageError"
+      <Avatar
+        :user="chatUser"
+        size="sm"
       />
       <div class="flex-1 min-w-0">
         <h3 class="font-semibold text-sm truncate">{{ chatData.userName }}</h3>
@@ -77,11 +75,9 @@
     <!-- Header -->
     <div class="flex items-center justify-between p-4 border-b flex-shrink-0">
       <div class="flex items-center gap-3 flex-1 min-w-0">
-        <img
-          :src="getAvatarUrl(chatData.userEmail || chatData.userName)"
-          :alt="chatData.userName"
-          class="w-10 h-10 rounded-full object-cover flex-shrink-0"
-          @error="handleImageError"
+        <Avatar
+          :user="chatUser"
+          size="md"
         />
         <div class="flex-1 min-w-0">
           <h3 class="font-semibold text-sm truncate">{{ chatData.userName }}</h3>
@@ -154,9 +150,10 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, computed } from 'vue'
 import MessageBubble from './MessageBubble.vue'
 import MessageInput from './MessageInput.vue'
+import Avatar from '../common/Avatar.vue'
 
 const props = defineProps({
   isOpen: {
@@ -183,18 +180,14 @@ const toggleMinimize = () => {
   isMinimized.value = !isMinimized.value
 }
 
-const getAvatarUrl = (identifier) => {
-  if (!identifier) return 'https://i.pravatar.cc/150?img=1'
-  const hash = identifier.split('').reduce((acc, char) => {
-    return char.charCodeAt(0) + ((acc << 5) - acc)
-  }, 0)
-  const index = Math.abs(hash % 10) + 1
-  return `https://i.pravatar.cc/150?img=${index}`
-}
-
-const handleImageError = (event) => {
-  event.target.src = 'https://i.pravatar.cc/150?img=1'
-}
+const chatUser = computed(() => {
+  if (!props.chatData) return null
+  return {
+    name: props.chatData.userName,
+    email: props.chatData.userEmail,
+    profile_image: props.chatData.profile_image,
+  }
+})
 
 const close = () => {
   emit('close')
@@ -213,21 +206,18 @@ const scrollToBottom = () => {
   })
 }
 
-// Watch for chatData changes and update messages
 watch(
   () => props.chatData,
   (newData) => {
     if (newData && newData.messages) {
       messages.value = newData.messages
       scrollToBottom()
-      // Reset minimized state when new chat opens
       isMinimized.value = false
     }
   },
   { immediate: true }
 )
 
-// Reset minimized state when chat closes
 watch(
   () => props.isOpen,
   (newVal) => {
@@ -237,7 +227,6 @@ watch(
   }
 )
 
-// Scroll to bottom when messages change
 watch(
   () => messages.value.length,
   () => {
