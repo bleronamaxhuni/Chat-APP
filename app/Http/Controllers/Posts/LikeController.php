@@ -18,11 +18,9 @@ class LikeController extends Controller
             ->first();
 
         if ($like) {
-            // Unlike
             $like->delete();
             $isLiked = false;
         } else {
-            // Like
             Like::create([
                 'user_id' => $user->id,
                 'post_id' => $post->id,

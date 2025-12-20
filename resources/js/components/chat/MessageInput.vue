@@ -50,7 +50,7 @@ const sendMessage = async () => {
     emit('message-sent', res.data)
   } catch (error) {
     console.error('Failed to send message:', error)
-    messageText.value = text // Restore message on error
+    messageText.value = text
   } finally {
     sending.value = false
   }

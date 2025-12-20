@@ -13,7 +13,6 @@ class PostController extends Controller
     {
         $user = $request->user();
 
-        // Get all friend IDs (both requester and addressee)
         $friendIds = Friendship::where(function ($q) use ($user) {
             $q->where('requester_id', $user->id)
                 ->orWhere('addressee_id', $user->id);
@@ -25,7 +24,7 @@ class PostController extends Controller
                     ? $friendship->addressee_id
                     : $friendship->requester_id;
             })
-            ->push($user->id); // Include own posts
+            ->push($user->id);
 
         $posts = Post::with(['user', 'likes.user', 'comments.user'])
             ->whereIn('user_id', $friendIds)

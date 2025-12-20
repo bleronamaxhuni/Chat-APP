@@ -94,7 +94,6 @@ class FriendshipController extends Controller
 
         $friendship->update(['status' => 'rejected']);
 
-        // Delete the friend_request_received notification for the addressee
         $user->notifications()
             ->where('type', 'App\Notifications\FriendRequestReceived')
             ->whereJsonContains('data->friendship_id', $friendship->id)

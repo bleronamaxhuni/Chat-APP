@@ -33,12 +33,7 @@ import PostForm from './PostForm.vue'
 import PostCard from './PostCard.vue'
 import api from '../../services/api'
 
-const props = defineProps({
-  autoRefresh: {
-    type: Boolean,
-    default: true,
-  },
-})
+const auth = useAuthStore()
 
 const posts = ref([])
 const loading = ref(false)
@@ -128,9 +123,9 @@ const handleCommentDeleted = (post, comment) => {
 onMounted(() => {
   loadPosts()
   
-  if (props.autoRefresh) {
-    // Refresh posts every 30 seconds
-    setInterval(loadPosts, 30000)
+  // Double-check before calling loadPosts
+  if (auth.isAuthenticated) {
+    loadPosts()
   }
 })
 

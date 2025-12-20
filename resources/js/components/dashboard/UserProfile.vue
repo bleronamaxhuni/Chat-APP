@@ -64,13 +64,11 @@ const handleImageUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
-  // Validate file type
   if (!file.type.startsWith('image/')) {
     uploadError.value = 'Please select an image file'
     return
   }
 
-  // Validate file size (2MB)
   if (file.size > 2 * 1024 * 1024) {
     uploadError.value = 'Image size must be less than 2MB'
     return
@@ -89,13 +87,10 @@ const handleImageUpload = async (event) => {
       },
     })
 
-    // Update the auth store user
     await auth.fetchUser()
     
-    // Emit event to parent component
     emit('profile-updated', response.data)
 
-    // Clear the input
     event.target.value = ''
   } catch (error) {
     uploadError.value = error.response?.data?.message || 'Failed to upload image'
