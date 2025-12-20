@@ -20,13 +20,17 @@
       </aside>
 
       <main class="flex-1 p-6 overflow-y-auto">
-        <div v-for="post in posts" :key="post.id" class="bg-white p-4 rounded mb-4 shadow">
-          <h4 class="font-bold mb-1">{{ post.author }}</h4>
-          <p>{{ post.content }}</p>
-        </div>
+        <PostFeed />
       </main>
 
-      <ConversationsSidebar :conversations="conversations" :is-open="showConversations" />
+      <ConversationsSidebar :is-open="showConversations" @open-chat="handleOpenChat" />
+
+      <ChatWindow
+        :is-open="showChatWindow"
+        :chat-data="currentChatData"
+        :sidebar-open="showConversations"
+        @close="closeChatWindow"
+      />
 
       <button
         @click="showConversations = !showConversations"
@@ -39,7 +43,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
 import api from '../services/api'
@@ -49,6 +53,8 @@ import DashboardHeader from '../components/dashboard/DashboardHeader.vue'
 import UserProfile from '../components/dashboard/UserProfile.vue'
 import SuggestedFriendsList from '../components/dashboard/SuggestedFriendsList.vue'
 import ConversationsSidebar from '../components/dashboard/ConversationsSidebar.vue'
+import PostFeed from '../components/posts/PostFeed.vue'
+import ChatWindow from '../components/chat/ChatWindow.vue'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -82,16 +88,25 @@ const profile = computed(() => ({
 
 const suggestedFriends = ref([])
 const showConversations = ref(false)
+const showChatWindow = ref(false)
+const currentChatData = ref(null)
 
-const posts = ref([
-  { id: 1, author: 'Alice', content: 'Hello world!' },
-  { id: 2, author: 'Bob', content: 'This is a dummy post' },
-])
+const handleOpenChat = (chatData) => {
+  currentChatData.value = {
+    conversationId: chatData.conversationId,
+    userId: chatData.userId,
+    userName: chatData.userName || 'Friend',
+    userEmail: chatData.userEmail || null,
+    messages: chatData.messages || [],
+  }
+  showChatWindow.value = true
+  // Keep conversations sidebar open so chat appears next to it
+}
 
-const conversations = ref([
-  { id: 1, name: 'Alice', lastMessage: 'Hey there!', photo: 'https://i.pravatar.cc/150?img=1' },
-  { id: 2, name: 'Bob', lastMessage: 'How are you?', photo: 'https://i.pravatar.cc/150?img=2' },
-])
+const closeChatWindow = () => {
+  showChatWindow.value = false
+  currentChatData.value = null
+}
 
 const toggleNotifications = async () => {
   await toggleNotificationsComposable()
@@ -131,6 +146,7 @@ const rejectRequest = async (notification) => {
     console.error('Failed to reject friend request', e)
   }
 }
+
 
 onMounted(async () => {
   try {
