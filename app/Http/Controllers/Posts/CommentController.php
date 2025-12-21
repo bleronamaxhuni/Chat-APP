@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Posts;
 use App\Http\Controllers\Controller;
 use App\Models\Posts\Comment;
 use App\Models\Posts\Post;
+use App\Notifications\AppNotification;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -15,13 +16,21 @@ class CommentController extends Controller
             'content' => 'required|string|max:1000',
         ]);
 
+        $user = $request->user();
+
         $comment = Comment::create([
-            'user_id' => $request->user()->id,
+            'user_id' => $user->id,
             'post_id' => $post->id,
             'content' => $request->content,
         ]);
 
         $comment->load('user');
+        
+        if ($post->user_id !== $user->id) {
+            $post->load('user');
+            
+            $post->user->notify(AppNotification::postCommented($comment));
+        }
 
         return response()->json([
             'id' => $comment->id,

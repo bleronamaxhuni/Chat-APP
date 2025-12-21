@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Friendship;
-use App\Notifications\FriendRequestReceived;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
@@ -13,12 +13,15 @@ class NotificationController extends Controller
     {
         $user = $request->user();
 
+        $fiveMinutesAgo = Carbon::now()->subMinutes(5);
+
         $notifications = $user->notifications()
+            ->where('created_at', '>=', $fiveMinutesAgo)
             ->latest()
             ->take(50)
             ->get()
             ->filter(function ($notification) {
-                if ($notification->type === FriendRequestReceived::class) {
+                if ($notification->data['type'] ?? null === 'friend_request_received') {
                     $friendshipId = $notification->data['friendship_id'] ?? null;
                     if ($friendshipId) {
                         $friendship = Friendship::find($friendshipId);

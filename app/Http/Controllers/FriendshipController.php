@@ -8,11 +8,9 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Notifications\FriendRequestReceived;
-use App\Notifications\FriendRequestAccepted;
+use App\Notifications\AppNotification;
 use App\Events\FriendRequestSent;
 use App\Events\FriendRequestStatusChanged;
-use App\Events\NotificationCreated;
 
 class FriendshipController extends Controller
 {
@@ -66,29 +64,9 @@ class FriendshipController extends Controller
 
         broadcast(new FriendRequestSent($friendship));
 
-        $friendship->addressee->notify(new FriendRequestReceived($friendship));
-        
-        $notification = $friendship->addressee->notifications()
-            ->where('type', FriendRequestReceived::class)
-            ->whereJsonContains('data->friendship_id', $friendship->id)
-            ->latest()
-            ->first();
-        
-        if ($notification) {
-            broadcast(new NotificationCreated([
-                'id' => $notification->id,
-                'type' => 'friend_request_received',
-                'data' => [
-                    'type' => 'friend_request_received',
-                    'friendship_id' => $friendship->id,
-                    'from_user_id' => $friendship->requester_id,
-                    'from_user_name' => $friendship->requester->name,
-                ],
-                'read_at' => null,
-                'created_at' => $notification->created_at->toISOString(),
-                'user_id' => $friendship->addressee_id,
-            ]));
-        }
+        $friendship->addressee->notify(
+            AppNotification::friendRequestReceived($friendship)
+        );
 
         return response()->json($friendship, 201);
     }
@@ -106,35 +84,16 @@ class FriendshipController extends Controller
         $friendship->load(['requester', 'addressee']);
 
         $user->notifications()
-            ->where('type', 'App\Notifications\FriendRequestReceived')
+            ->where('type', 'App\Notifications\AppNotification')
+            ->whereJsonContains('data->type', 'friend_request_received')
             ->whereJsonContains('data->friendship_id', $friendship->id)
             ->delete();
 
         broadcast(new FriendRequestStatusChanged($friendship, 'accepted'));
 
-        $friendship->requester->notify(new FriendRequestAccepted($friendship));
-        
-        $notification = $friendship->requester->notifications()
-            ->where('type', FriendRequestAccepted::class)
-            ->whereJsonContains('data->friendship_id', $friendship->id)
-            ->latest()
-            ->first();
-        
-        if ($notification) {
-            broadcast(new NotificationCreated([
-                'id' => $notification->id,
-                'type' => 'friend_request_accepted',
-                'data' => [
-                    'type' => 'friend_request_accepted',
-                    'friendship_id' => $friendship->id,
-                    'by_user_id' => $friendship->addressee_id,
-                    'by_user_name' => $friendship->addressee->name,
-                ],
-                'read_at' => null,
-                'created_at' => $notification->created_at->toISOString(),
-                'user_id' => $friendship->requester_id,
-            ]));
-        }
+        $friendship->requester->notify(
+            AppNotification::friendRequestAccepted($friendship)
+        );
 
         return response()->json($friendship);
     }
@@ -152,7 +111,8 @@ class FriendshipController extends Controller
         $friendship->load(['requester', 'addressee']);
 
         $user->notifications()
-            ->where('type', 'App\Notifications\FriendRequestReceived')
+            ->where('type', 'App\Notifications\AppNotification')
+            ->whereJsonContains('data->type', 'friend_request_received')
             ->whereJsonContains('data->friendship_id', $friendship->id)
             ->delete();
 

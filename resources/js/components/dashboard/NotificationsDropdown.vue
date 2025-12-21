@@ -52,6 +52,12 @@
                   <span v-else-if="n.data?.result === 'rejected'">
                     You declined {{ n.data.from_user_name }}'s friend request
                   </span>
+                  <span v-else-if="n.data?.type === 'post_liked'">
+                    {{ n.data.from_user_name }} liked your post
+                  </span>
+                  <span v-else-if="n.data?.type === 'post_commented'">
+                    {{ n.data.from_user_name }} commented on your post
+                  </span>
                 </p>
               </div>
               <span
@@ -99,12 +105,15 @@ const emit = defineEmits(['toggle', 'accept', 'reject', 'mark-all-read'])
 
 const incomingRequests = computed(() =>
   props.notifications.filter(
-    n => n.data?.type === 'friend_request_received' || n.data?.type === 'friend_request_accepted'
+    n => n.data?.type === 'friend_request_received' 
+      || n.data?.type === 'friend_request_accepted'
+      || n.data?.type === 'post_liked'
+      || n.data?.type === 'post_commented'
   )
 )
 
 const unreadNotificationCount = computed(
-  () => incomingRequests.value.filter(n => !n.read_at).length
+  () => props.notifications.filter(n => !n.read_at).length
 )
 
 const containerRef = useClickOutside(() => {

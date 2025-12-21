@@ -11,12 +11,15 @@ export function useNotifications() {
 
   const incomingRequests = computed(() =>
     notifications.value.filter(
-      n => n.data?.type === 'friend_request_received' || n.data?.type === 'friend_request_accepted'
+      n => n.data?.type === 'friend_request_received' 
+        || n.data?.type === 'friend_request_accepted'
+        || n.data?.type === 'post_liked'
+        || n.data?.type === 'post_commented'
     )
   )
 
   const unreadNotificationCount = computed(
-    () => incomingRequests.value.filter(n => !n.read_at).length
+    () => notifications.value.filter(n => !n.read_at).length
   )
 
   const loadNotifications = async () => {
@@ -38,7 +41,7 @@ export function useNotifications() {
   }
 
   const markAllNotificationsRead = async () => {
-    const unread = incomingRequests.value.filter(n => !n.read_at)
+    const unread = notifications.value.filter(n => !n.read_at)
     await Promise.all(unread.map(n => markNotificationRead(n)))
   }
 
