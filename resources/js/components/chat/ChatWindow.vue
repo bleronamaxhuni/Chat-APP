@@ -129,7 +129,7 @@
     <!-- Messages Area -->
     <div
       ref="messagesContainer"
-      class="flex-1 overflow-y-auto p-4 bg-gray-50"
+      class="flex-1 overflow-y-auto p-4 pb-2 bg-gray-50"
     >
       <div v-if="messages.length === 0" class="flex items-center justify-center h-full text-gray-500 text-sm">
         <p class="text-center">No messages yet.<br />Start the conversation!</p>
@@ -139,21 +139,33 @@
         :key="message.id"
         :message="message"
       />
+      
+      <!-- Typing Indicator -->
+      <TypingIndicator
+        :is-typing="isOtherUserTyping"
+        :user-name="typingUserName"
+      />
     </div>
 
     <!-- Input Area -->
     <MessageInput
       :conversation-id="chatData.conversationId"
       @message-sent="handleMessageSent"
+      @typing="handleTyping"
     />
   </aside>
 </template>
 
 <script setup>
-import { ref, watch, nextTick, computed } from 'vue'
+import { ref, watch, nextTick, computed, onMounted, onUnmounted } from 'vue'
 import MessageBubble from './MessageBubble.vue'
 import MessageInput from './MessageInput.vue'
+import TypingIndicator from './TypingIndicator.vue'
 import Avatar from '../common/Avatar.vue'
+import echo from '../../services/echo'
+import { useAuthStore } from '../../stores/auth'
+
+const auth = useAuthStore()
 
 const props = defineProps({
   isOpen: {
@@ -175,6 +187,10 @@ const emit = defineEmits(['close'])
 const messages = ref([])
 const messagesContainer = ref(null)
 const isMinimized = ref(false)
+let currentChannel = null
+const isOtherUserTyping = ref(false)
+const typingUserName = ref('')
+let typingTimeout = null
 
 const toggleMinimize = () => {
   isMinimized.value = !isMinimized.value
@@ -194,9 +210,14 @@ const close = () => {
 }
 
 const handleMessageSent = (newMessage) => {
-  messages.value.push(newMessage)
-  scrollToBottom()
+  const exists = messages.value.some(msg => msg.id === newMessage.id)
+  if (!exists) {
+    messages.value.push(newMessage)
+    scrollToBottom()
+  }
 }
+
+const handleTyping = (isTyping) => {}
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -206,6 +227,76 @@ const scrollToBottom = () => {
   })
 }
 
+const setupChannelListener = (conversationId) => {
+  cleanupChannel()
+
+  if (!conversationId) return
+
+  // console.log('Setting up listener for conversation:', conversationId)
+
+  const channel = echo.private(`conversation.${conversationId}`)
+  currentChannel = channel
+  
+  // channel.subscribed(() => {
+  //   console.log('Successfully subscribed to conversation channel:', conversationId)
+  // })
+
+  // channel.error((error) => {
+  //   console.error('Channel subscription error:', error)
+  // })
+  
+  channel.listen('.message.sent', (data) => {
+    if (props.chatData?.conversationId === conversationId) {
+      const exists = messages.value.some(msg => msg.id === data.id)
+      if (!exists) {
+        messages.value.push(data)
+        scrollToBottom()
+      }
+      isOtherUserTyping.value = false
+    }
+  })
+  
+  channel.listen('.user.typing', (data) => {
+    if (props.chatData?.conversationId === conversationId && data.user_id !== auth.user?.id) {
+      if (data.is_typing) {
+        typingUserName.value = data.user_name
+        isOtherUserTyping.value = true
+        scrollToBottom()
+        if (typingTimeout) {
+          clearTimeout(typingTimeout)
+        }
+        typingTimeout = setTimeout(() => {
+          isOtherUserTyping.value = false
+        }, 3000)
+      } else {
+        isOtherUserTyping.value = false
+        if (typingTimeout) {
+          clearTimeout(typingTimeout)
+        }
+      }
+    }
+  })
+}
+
+const cleanupChannel = () => {
+  if (currentChannel) {
+    try {
+      currentChannel.stopListening('.message.sent')
+      currentChannel.stopListening('.user.typing')
+    } catch (e) {
+      if (currentChannel.unsubscribe) {
+        currentChannel.unsubscribe()
+      }
+    }
+    currentChannel = null
+  }
+  isOtherUserTyping.value = false
+  if (typingTimeout) {
+    clearTimeout(typingTimeout)
+    typingTimeout = null
+  }
+}
+
 watch(
   () => props.chatData,
   (newData) => {
@@ -213,6 +304,12 @@ watch(
       messages.value = newData.messages
       scrollToBottom()
       isMinimized.value = false
+      
+      if (newData.conversationId) {
+        setupChannelListener(newData.conversationId)
+      }
+    } else {
+      cleanupChannel()
     }
   },
   { immediate: true }
@@ -223,6 +320,9 @@ watch(
   (newVal) => {
     if (!newVal) {
       isMinimized.value = false
+      cleanupChannel()
+    } else if (newVal && props.chatData?.conversationId) {
+      setupChannelListener(props.chatData.conversationId)
     }
   }
 )
@@ -233,5 +333,9 @@ watch(
     scrollToBottom()
   }
 )
+
+onUnmounted(() => {
+  cleanupChannel()
+})
 </script>
 

@@ -42,6 +42,7 @@ Route::middleware('web')->group(function () {
     Route::get('/conversations/user/{userId}', [ConversationController::class, 'getOrCreate'])->middleware('auth');
     Route::get('/conversations/{conversation}/messages', [ConversationController::class, 'messages'])->middleware('auth');
     Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'storeMessage'])->middleware('auth');
+    Route::post('/conversations/{conversation}/typing', [ConversationController::class, 'typing'])->middleware('auth');
 });
 
 Route::view('/{any}', 'app')->where('any', '.*');

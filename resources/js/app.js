@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import router from './router'
 import App from './App.vue'
 import { useAuthStore } from './stores/auth'
+import echo from './services/echo'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -14,6 +15,8 @@ const auth = useAuthStore(pinia)
 
 const currentPath = window.location.pathname
 const isGuestRoute = currentPath === '/login' || currentPath === '/register'
+
+window.Echo = echo
 
 if (isGuestRoute) {
   app.mount('#app')

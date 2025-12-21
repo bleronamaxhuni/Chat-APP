@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageSent;
+use App\Events\UserTyping;
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Friendship;
@@ -200,6 +202,9 @@ class ConversationController extends Controller
 
         $message->load('sender');
 
+        // Broadcast the message to other users in the conversation
+        broadcast(new MessageSent($message))->toOthers();
+
         return response()->json([
             'id' => $message->id,
             'message' => $message->message,
@@ -208,5 +213,31 @@ class ConversationController extends Controller
             'seen' => $message->seen,
             'created_at' => $message->created_at,
         ], 201);
+    }
+
+    /**
+     * Broadcast typing indicator
+     */
+    public function typing(Request $request, Conversation $conversation)
+    {
+        $user = $request->user();
+
+        $conversation->load('users');
+        if (!$conversation->users->contains($user->id)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'is_typing' => 'required|boolean',
+        ]);
+
+        broadcast(new UserTyping(
+            $user->id,
+            $user->name,
+            $conversation->id,
+            $request->is_typing
+        ))->toOthers();
+
+        return response()->json(['success' => true]);
     }
 }

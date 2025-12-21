@@ -17,7 +17,9 @@
         "vue": "^3.5.25"
     },
     "dependencies": {
+        "laravel-echo": "^2.2.6",
         "pinia": "^3.0.4",
+        "pusher-js": "^8.4.0",
         "vue-router": "^4.6.4"
     }
 }
