@@ -3,8 +3,9 @@
   <div
     v-if="isOpen && chatData && isMinimized"
     :class="[
-      'fixed bottom-0 bg-white border-l border-t flex items-center justify-between p-3 transition-all duration-300 z-40 shadow-lg cursor-pointer hover:bg-gray-50',
-      sidebarOpen ? 'right-80 w-96' : 'right-25 w-96',
+      'fixed bottom-0 bg-white border-l border-t flex items-center justify-between p-2 sm:p-3 transition-all duration-300 z-40 shadow-lg cursor-pointer hover:bg-gray-50',
+      'w-full md:w-96',
+      sidebarOpen ? 'md:right-96' : 'md:right-25',
       isOpen ? 'translate-x-0' : 'translate-x-full'
     ]"
     @click="toggleMinimize"
@@ -63,31 +64,41 @@
     </div>
   </div>
 
+  <!-- Mobile Overlay -->
+  <div
+    v-if="isOpen && chatData && !isMinimized"
+    class="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+    @click="close"
+  ></div>
+
   <!-- Full Chat Window -->
   <aside
     v-if="isOpen && chatData && !isMinimized"
     :class="[
-      'fixed bottom-0 w-96 h-100 bg-white border-l flex flex-col transition-all duration-300 overflow-hidden z-40 shadow-lg',
-      sidebarOpen ? 'right-80' : 'right-25',
-      isOpen ? 'translate-x-0' : 'translate-x-full'
+      'fixed bottom-0 right-0',
+      'w-full md:w-96',
+      'h-screen md:h-100',
+      'bg-white border-l flex flex-col transition-all duration-300 overflow-hidden z-[60] md:z-40 shadow-lg',
+      sidebarOpen ? 'md:right-80' : 'md:right-25',
+      isOpen ? 'translate-x-0 translate-y-0' : 'translate-x-full md:translate-y-0 translate-y-full'
     ]"
   >
     <!-- Header -->
-    <div class="flex items-center justify-between p-4 border-b flex-shrink-0">
-      <div class="flex items-center gap-3 flex-1 min-w-0">
+    <div class="flex items-center justify-between p-3 sm:p-4 border-b flex-shrink-0">
+      <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
         <Avatar
           :user="chatUser"
           size="md"
         />
         <div class="flex-1 min-w-0">
-          <h3 class="font-semibold text-sm truncate">{{ chatData.userName }}</h3>
+          <h3 class="font-semibold text-sm sm:text-base truncate">{{ chatData.userName }}</h3>
           <p class="text-xs text-gray-500">Active now</p>
         </div>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1 sm:gap-2">
         <button
           @click="toggleMinimize"
-          class="text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+          class="hidden md:flex text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
           title="Minimize"
         >
           <svg
@@ -129,7 +140,7 @@
     <!-- Messages Area -->
     <div
       ref="messagesContainer"
-      class="flex-1 overflow-y-auto p-4 pb-2 bg-gray-50"
+      class="flex-1 overflow-y-auto p-3 sm:p-4 pb-2 bg-gray-50"
     >
       <div v-if="messages.length === 0" class="flex items-center justify-center h-full text-gray-500 text-sm">
         <p class="text-center">No messages yet.<br />Start the conversation!</p>

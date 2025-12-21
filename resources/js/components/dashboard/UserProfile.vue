@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center mb-6">
+  <div class="flex flex-col items-center mb-4 sm:mb-6">
     <div class="relative group">
       <Avatar :user="profile" size="xl" />
       <label
@@ -34,10 +34,10 @@
         @change="handleImageUpload"
       />
     </div>
-    <h2 class="font-bold text-lg mt-2">{{ profile.name }}</h2>
-    <p class="text-sm text-gray-500">{{ profile.email }}</p>
+    <h2 class="font-bold text-base sm:text-lg mt-2 truncate w-full text-center px-2">{{ profile.name }}</h2>
+    <p class="text-xs sm:text-sm text-gray-500 truncate w-full text-center px-2">{{ profile.email }}</p>
     <div v-if="uploading" class="mt-2 text-xs text-blue-500">Uploading...</div>
-    <div v-if="uploadError" class="mt-2 text-xs text-red-500">{{ uploadError }}</div>
+    <div v-if="uploadError" class="mt-2 text-xs text-red-500 text-center px-2">{{ uploadError }}</div>
   </div>
 </template>
 

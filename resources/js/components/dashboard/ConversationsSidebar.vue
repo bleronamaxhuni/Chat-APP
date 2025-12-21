@@ -1,11 +1,32 @@
 <template>
+  <!-- Mobile Overlay -->
+  <div
+    v-if="isOpen"
+    class="fixed inset-0 z-40 md:hidden"
+    @click="$emit('close')"
+  ></div>
+  
   <aside
     :class="[
-      'w-80 bg-white border-l p-4 transition-transform duration-300 flex flex-col overflow-hidden',
+      'fixed md:fixed top-0 md:top-[64px] right-0 h-screen md:h-[calc(100vh-64px)]',
+      'w-full sm:w-60 md:w-60 lg:w-80',
+      'bg-white border-l p-3 sm:p-4',
+      'transition-transform duration-300 flex flex-col overflow-hidden z-50 md:z-30',
       isOpen ? 'translate-x-0' : 'translate-x-full'
     ]"
   >
-    <h3 class="font-semibold mb-4 flex-shrink-0">Conversations</h3>
+    <div class="flex items-center justify-between mb-4 flex-shrink-0">
+      <h3 class="font-semibold text-base sm:text-lg">Conversations</h3>
+      <button
+        @click="$emit('close')"
+        class="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
+        aria-label="Close conversations"
+      >
+        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
     
     <div class="flex-1 overflow-y-auto">
       <div v-if="loading" class="flex justify-center items-center py-8">
@@ -93,7 +114,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['open-chat'])
+const emit = defineEmits(['open-chat', 'close'])
 
 const conversations = ref([])
 const friends = ref([])

@@ -1,16 +1,16 @@
 <template>
-  <div>
+  <div class="max-w-2xl mx-auto w-full">
     <PostForm
       :loading="creating"
       @submit="handleCreatePost"
     />
 
     <div v-if="loading" class="text-center py-8">
-      <p class="text-gray-500">Loading posts...</p>
+      <p class="text-gray-500 text-sm sm:text-base">Loading posts...</p>
     </div>
 
     <div v-else-if="posts.length === 0" class="text-center py-8">
-      <p class="text-gray-500">No posts yet. Be the first to post!</p>
+      <p class="text-gray-500 text-sm sm:text-base">No posts yet. Be the first to post!</p>
     </div>
 
     <PostCard

@@ -15,7 +15,7 @@
 
     <div
       v-if="isOpen"
-      class="absolute right-0 top-full mt-2 w-80 bg-white border rounded shadow-lg z-30"
+      class="absolute right-0 top-full mt-2 w-72 sm:w-80 md:w-96 bg-white border rounded shadow-lg z-30 max-h-[80vh] overflow-hidden flex flex-col"
     >
       <div class="px-4 py-3 border-b flex items-center justify-between">
         <h3 class="font-semibold text-sm">Notifications</h3>
@@ -27,7 +27,7 @@
           Mark all as read
         </button>
       </div>
-      <div class="max-h-80 overflow-y-auto px-4 py-3 text-sm">
+      <div class="flex-1 overflow-y-auto px-3 sm:px-4 py-3 text-sm">
         <ul class="space-y-2">
           <li v-if="!incomingRequests.length" class="text-gray-500">
             No incoming friend requests.

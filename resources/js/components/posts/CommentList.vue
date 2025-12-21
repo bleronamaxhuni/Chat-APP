@@ -1,16 +1,16 @@
 <template>
-  <div class="mt-3 space-y-2">
+  <div class="mt-2 sm:mt-3 space-y-1.5 sm:space-y-2">
     <div
       v-for="comment in comments"
       :key="comment.id"
       class="flex items-start gap-2 p-2 bg-gray-50 rounded-lg"
     >
-      <div class="flex-1">
-        <div class="flex items-center gap-2 mb-1">
-          <span class="font-semibold text-sm">{{ comment.user.name }}</span>
-          <span class="text-xs text-gray-500">{{ formatDate(comment.created_at) }}</span>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-1.5 sm:gap-2 mb-1 flex-wrap">
+          <span class="font-semibold text-xs sm:text-sm truncate">{{ comment.user.name }}</span>
+          <span class="text-xs text-gray-500 flex-shrink-0">{{ formatDate(comment.created_at) }}</span>
         </div>
-        <p v-if="editingCommentId !== comment.id" class="text-sm text-gray-700">
+        <p v-if="editingCommentId !== comment.id" class="text-xs sm:text-sm text-gray-700 break-words">
           {{ comment.content }}
         </p>
         <CommentForm
@@ -21,16 +21,16 @@
           @cancel="editingCommentId = null"
         />
       </div>
-      <div v-if="canEdit(comment)" class="flex gap-1">
+      <div v-if="canEdit(comment)" class="flex gap-1 flex-shrink-0">
         <button
           @click="editingCommentId = comment.id"
-          class="text-xs text-blue-500 hover:text-blue-700"
+          class="text-xs text-blue-500 hover:text-blue-700 transition-colors"
         >
           Edit
         </button>
         <button
           @click="handleDeleteComment(comment)"
-          class="text-xs text-red-500 hover:text-red-700"
+          class="text-xs text-red-500 hover:text-red-700 transition-colors"
         >
           Delete
         </button>

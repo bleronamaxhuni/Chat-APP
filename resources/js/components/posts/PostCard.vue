@@ -1,11 +1,11 @@
 <template>
-  <div class="bg-white p-4 rounded-lg shadow mb-4">
+  <div class="bg-white p-3 sm:p-4 rounded-lg shadow mb-3 sm:mb-4">
     <!-- Post Header -->
-    <div class="flex items-center justify-between mb-3">
-      <div class="flex items-center gap-2">
+    <div class="flex items-center justify-between mb-2 sm:mb-3">
+      <div class="flex items-center gap-2 flex-1 min-w-0">
         <Avatar :user="post.user" size="md" />
-        <div>
-          <h4 class="font-semibold">{{ post.user.name }}</h4>
+        <div class="min-w-0 flex-1">
+          <h4 class="font-semibold text-sm sm:text-base truncate">{{ post.user.name }}</h4>
           <p class="text-xs text-gray-500">{{ formatDate(post.created_at) }}</p>
         </div>
       </div>
@@ -37,8 +37,8 @@
     </div>
 
     <!-- Post Content -->
-    <div v-if="!isEditing" class="mb-3">
-      <p class="text-gray-800 whitespace-pre-wrap">{{ post.content }}</p>
+    <div v-if="!isEditing" class="mb-2 sm:mb-3">
+      <p class="text-gray-800 whitespace-pre-wrap text-sm sm:text-base break-words">{{ post.content }}</p>
     </div>
     <PostForm
       v-else
@@ -49,11 +49,11 @@
     />
 
     <!-- Post Actions -->
-    <div v-if="!isEditing" class="flex items-center gap-4 pt-3 border-t">
+    <div v-if="!isEditing" class="flex items-center gap-2 sm:gap-4 pt-2 sm:pt-3 border-t">
       <button
         @click="handleLike"
         :class="[
-          'flex items-center gap-2 px-3 py-1 rounded-lg transition-colors',
+          'flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 rounded-lg transition-colors text-sm sm:text-base',
           post.is_liked
             ? 'bg-red-50 text-red-600 hover:bg-red-100'
             : 'text-gray-600 hover:bg-gray-100'
@@ -64,14 +64,14 @@
       </button>
       <button
         @click="showComments = !showComments"
-        class="flex items-center gap-2 px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-100"
+        class="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-100 text-sm sm:text-base"
       >
         💬 {{ post.comments.length }}
       </button>
     </div>
 
     <!-- Comments Section -->
-    <div v-if="showComments" class="mt-3 pt-3 border-t">
+    <div v-if="showComments" class="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t">
       <CommentList
         :comments="post.comments"
         @update="handleCommentUpdate"

@@ -13,18 +13,26 @@
       @mark-all-notifications-read="markAllNotificationsRead"
     />
 
-    <div class="flex flex-1 overflow-hidden">
-      <aside class="w-64 bg-white border-r p-4 flex flex-col overflow-y-auto">
+    <div class="flex flex-1 overflow-hidden relative">
+      <!-- Left Sidebar - Hidden on mobile, visible on md+ -->
+      <aside class="hidden md:flex w-64 lg:w-72 bg-white border-r p-3 lg:p-4 flex-col overflow-y-auto flex-shrink-0">
         <UserProfile :profile="profile" />
         <SuggestedFriendsList :friends="suggestedFriends" @add-friend="addFriend" />
       </aside>
 
-      <main class="flex-1 p-6 overflow-y-auto">
+      <!-- Main Content -->
+      <main class="flex-1 min-w-0 p-3 sm:p-4 md:p-6 overflow-y-auto">
         <PostFeed />
       </main>
 
-      <ConversationsSidebar :is-open="showConversations" @open-chat="handleOpenChat" />
+      <!-- Conversations Sidebar -->
+      <ConversationsSidebar 
+        :is-open="showConversations" 
+        @open-chat="handleOpenChat"
+        @close="showConversations = false"
+      />
 
+      <!-- Chat Window -->
       <ChatWindow
         :is-open="showChatWindow"
         :chat-data="currentChatData"
@@ -32,11 +40,13 @@
         @close="closeChatWindow"
       />
 
+      <!-- Chat Button - Responsive positioning -->
       <button
         @click="showConversations = !showConversations"
-        class="fixed bottom-6 right-6 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600"
+        class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-blue-500 text-white p-3 sm:p-4 rounded-full shadow-lg hover:bg-blue-600 transition-colors z-30"
+        aria-label="Open conversations"
       >
-        💬
+        <span class="text-xl sm:text-2xl">💬</span>
       </button>
     </div>
   </div>
@@ -101,6 +111,7 @@ const handleOpenChat = (chatData) => {
     messages: chatData.messages || [],
   }
   showChatWindow.value = true
+  // Keep sidebar open - chat window will appear on top with higher z-index
 }
 
 const closeChatWindow = () => {

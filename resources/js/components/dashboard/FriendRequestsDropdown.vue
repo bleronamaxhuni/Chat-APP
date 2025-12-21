@@ -8,12 +8,12 @@
     </button>
     <div
       v-if="isOpen"
-      class="absolute right-0 top-full mt-2 w-96 bg-white border rounded shadow-lg z-20"
+      class="absolute right-0 top-full mt-2 w-72 sm:w-80 md:w-96 bg-white border rounded shadow-lg z-20 max-h-[80vh] overflow-hidden flex flex-col"
     >
       <div class="px-4 py-3 border-b">
         <h3 class="font-semibold text-sm">Requests Sent</h3>
       </div>
-      <div class="max-h-80 overflow-y-auto px-4 py-3 text-sm">
+      <div class="flex-1 overflow-y-auto px-3 sm:px-4 py-3 text-sm">
         <ul class="space-y-2">
           <li v-if="!friendRequests.outgoing.length" class="text-gray-500">
             You haven't sent any friend requests yet.
