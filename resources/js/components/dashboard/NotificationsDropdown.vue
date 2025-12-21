@@ -30,7 +30,7 @@
       <div class="flex-1 overflow-y-auto px-3 sm:px-4 py-3 text-sm">
         <ul class="space-y-2">
           <li v-if="!incomingRequests.length" class="text-gray-500">
-            No incoming friend requests.
+            No notifications.
           </li>
           <li
             v-for="n in incomingRequests"
@@ -40,13 +40,16 @@
             <div class="flex justify-between items-start">
               <div class="flex-1 mr-2">
                 <p class="font-medium">
-                  <span v-if="!n.data.result">
+                  <span v-if="n.data?.type === 'friend_request_received' && !n.data.result">
                     {{ n.data.from_user_name }} sent you a friend request
                   </span>
-                  <span v-else-if="n.data.result === 'accepted'">
-                    You are now friends with {{ n.data.from_user_name }}
+                  <span v-else-if="n.data?.type === 'friend_request_received' && n.data.result === 'accepted'">
+                    You accepted {{ n.data.from_user_name }}'s friend request
                   </span>
-                  <span v-else-if="n.data.result === 'rejected'">
+                  <span v-else-if="n.data?.type === 'friend_request_accepted'">
+                    {{ n.data.by_user_name }} accepted your friend request
+                  </span>
+                  <span v-else-if="n.data?.result === 'rejected'">
                     You declined {{ n.data.from_user_name }}'s friend request
                   </span>
                 </p>
@@ -56,7 +59,7 @@
                 class="mt-1 h-2 w-2 rounded-full bg-blue-500"
               ></span>
             </div>
-            <div v-if="!n.data.result" class="mt-2 flex space-x-2 text-xs">
+            <div v-if="n.data?.type === 'friend_request_received' && !n.data.result" class="mt-2 flex space-x-2 text-xs">
               <button
                 @click="$emit('accept', n)"
                 class="px-2 py-1 rounded bg-green-500 text-white hover:bg-green-600"
@@ -96,7 +99,7 @@ const emit = defineEmits(['toggle', 'accept', 'reject', 'mark-all-read'])
 
 const incomingRequests = computed(() =>
   props.notifications.filter(
-    n => n.data?.type === 'friend_request_received'
+    n => n.data?.type === 'friend_request_received' || n.data?.type === 'friend_request_accepted'
   )
 )
 

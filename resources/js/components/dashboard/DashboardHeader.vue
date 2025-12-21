@@ -8,14 +8,7 @@
         @accept-friend="$emit('accept-friend', $event)"
         @select-user="$emit('select-user', $event)"
       />
-      <router-link
-        to="/settings"
-        class="relative p-2 rounded-full hover:bg-gray-100 focus:outline-none transition-colors"
-        aria-label="Account Settings"
-        title="Account Settings"
-      >
-        <i class="fa-solid fa-gear text-gray-700 text-sm sm:text-base"></i>
-      </router-link>
+      
       <NotificationsDropdown
         :notifications="notifications"
         :is-open="showNotifications"
@@ -24,11 +17,22 @@
         @reject="$emit('reject-request', $event)"
         @mark-all-read="$emit('mark-all-notifications-read')"
       />
+      
       <FriendRequestsDropdown
         :friend-requests="friendRequests"
         :is-open="showFriendRequests"
         @toggle="$emit('toggle-friend-requests')"
       />
+
+      <router-link
+        to="/settings"
+        class="relative p-2 rounded-full hover:bg-gray-100 focus:outline-none transition-colors"
+        aria-label="Account Settings"
+        title="Account Settings"
+      >
+        <i class="fa-solid fa-gear text-gray-700 text-sm sm:text-base"></i>
+      </router-link>
+
       <button 
         @click="$emit('logout')" 
         class="relative p-2 rounded-full hover:bg-gray-100 focus:outline-none transition-colors"

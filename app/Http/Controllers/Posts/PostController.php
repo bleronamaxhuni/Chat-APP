@@ -83,6 +83,7 @@ class PostController extends Controller
                 'id' => $post->user->id,
                 'name' => $post->user->name,
                 'email' => $post->user->email,
+                'profile_image' => $post->user->profile_image,
             ],
             'likes_count' => 0,
             'is_liked' => false,
@@ -115,6 +116,7 @@ class PostController extends Controller
                 'id' => $post->user->id,
                 'name' => $post->user->name,
                 'email' => $post->user->email,
+                'profile_image' => $post->user->profile_image,
             ],
             'likes_count' => $post->likes->count(),
             'is_liked' => $post->likes->contains('user_id', $request->user()->id),
@@ -126,6 +128,7 @@ class PostController extends Controller
                     'user' => [
                         'id' => $comment->user->id,
                         'name' => $comment->user->name,
+                        'profile_image' => $comment->user->profile_image,
                     ],
                 ];
             }),

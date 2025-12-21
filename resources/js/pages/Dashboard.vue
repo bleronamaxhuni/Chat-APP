@@ -62,12 +62,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
 import api from '../services/api'
 import { useNotifications } from '../composables/useNotifications'
 import { useFriendRequests } from '../composables/useFriendRequests'
+import echo from '../services/echo'
 import DashboardHeader from '../components/dashboard/DashboardHeader.vue'
 import UserProfile from '../components/dashboard/UserProfile.vue'
 import SuggestedFriendsList from '../components/dashboard/SuggestedFriendsList.vue'
@@ -85,6 +86,8 @@ const {
   markAllNotificationsRead,
   toggleNotifications: toggleNotificationsComposable,
   loadNotifications,
+  setupNotificationListener,
+  removeNotificationListener,
 } = useNotifications()
 
 const {
@@ -121,7 +124,6 @@ const handleOpenChat = (chatData) => {
     messages: chatData.messages || [],
   }
   showChatWindow.value = true
-  // Keep sidebar open - chat window will appear on top with higher z-index
 }
 
 const closeChatWindow = () => {
@@ -142,7 +144,6 @@ const addFriend = async (friend) => {
     const response = await api.post('/friendships', { user_id: friend.id })
     suggestedFriends.value = suggestedFriends.value.filter(f => f.id !== friend.id)
     await loadFriendRequests()
-    // Update the friend's status in search results if visible
     if (dashboardHeaderRef.value?.userSearchRef) {
       dashboardHeaderRef.value.userSearchRef.updateUserStatus(friend.id, 'pending_outgoing', response.data.id)
     }
@@ -159,7 +160,6 @@ const handleAcceptFriendFromSearch = async (user) => {
     }
     const response = await api.post(`/friendships/${user.friendship_id}/accept`)
     await loadFriendRequests()
-    // Update the user's status in search results if visible
     if (dashboardHeaderRef.value?.userSearchRef) {
       dashboardHeaderRef.value.userSearchRef.updateUserStatus(user.id, 'friends', user.friendship_id)
     }
@@ -188,8 +188,10 @@ const handleSelectUser = async (user) => {
 const acceptRequest = async (notification) => {
   try {
     await api.post(`/friendships/${notification.data.friendship_id}/accept`)
-    await markNotificationRead(notification)
-    notification.data.result = 'accepted'
+    const index = notifications.value.findIndex(n => n.id === notification.id)
+    if (index !== -1) {
+      notifications.value.splice(index, 1)
+    }
     await loadFriendRequests()
   } catch (e) {
     console.error('Failed to accept friend request', e)
@@ -199,13 +201,38 @@ const acceptRequest = async (notification) => {
 const rejectRequest = async (notification) => {
   try {
     await api.post(`/friendships/${notification.data.friendship_id}/reject`)
-    await markNotificationRead(notification)
-    notification.data.result = 'rejected'
+    const index = notifications.value.findIndex(n => n.id === notification.id)
+    if (index !== -1) {
+      notifications.value.splice(index, 1)
+    }
   } catch (e) {
     console.error('Failed to reject friend request', e)
   }
 }
 
+
+const setupFriendshipListeners = (userChannel) => {
+  if (!auth.user?.id || !userChannel) return
+
+  userChannel.listen('.friend.request.sent', (data) => {
+    console.log('📤 Friend request sent event received:', data)
+    friendRequests.value.outgoing.unshift(data)
+  })
+
+  userChannel.listen('.friend.request.status.changed', (data) => {
+    console.log('🔄 Friend request status changed:', data)
+    const index = friendRequests.value.outgoing.findIndex(
+      fr => fr.id === data.id
+    )
+    if (index !== -1) {
+      friendRequests.value.outgoing[index] = data
+    } else {
+      loadFriendRequests()
+    }
+  })
+}
+
+let userChannel = null
 
 onMounted(async () => {
   try {
@@ -219,5 +246,31 @@ onMounted(async () => {
 
   await loadFriendRequests()
   await loadNotifications()
+
+  if (auth.user?.id) {
+    userChannel = echo.private(`user.${auth.user.id}`)
+    
+    userChannel
+      .subscribed(() => {
+        console.log('✅ Subscribed to user channel:', auth.user.id)
+      })
+      .error((error) => {
+        console.error('❌ User channel subscription error:', error)
+      })
+    
+    setupNotificationListener(userChannel)
+    
+    setupFriendshipListeners(userChannel)
+  }
+})
+
+onUnmounted(() => {
+  removeNotificationListener()
+  if (userChannel) {
+    userChannel.stopListening('.friend.request.sent')
+    userChannel.stopListening('.friend.request.status.changed')
+    echo.leave(`user.${auth.user?.id}`)
+    userChannel = null
+  }
 })
 </script>
