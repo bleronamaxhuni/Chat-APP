@@ -14,14 +14,29 @@
       ]"
     >
       <p class="text-sm">{{ message.message }}</p>
-      <p
+      <div
         :class="[
-          'text-xs mt-1',
-          isOwnMessage ? 'text-blue-100' : 'text-gray-500'
+          'flex items-center gap-1 mt-1',
         ]"
       >
-        {{ formatTime(message.created_at) }}
-      </p>
+        <p
+          :class="[
+            'text-xs',
+            isOwnMessage ? 'text-blue-100' : 'text-gray-500'
+          ]"
+        >
+          {{ formatTime(message.created_at) }}
+        </p>
+        <span
+          v-if="isOwnMessage && message.seen"
+          :class="[
+            'text-xs',
+            'text-blue-100'
+          ]"
+        >
+          • Seen
+        </span>
+      </div>
     </div>
   </div>
 </template>

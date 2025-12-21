@@ -240,4 +240,27 @@ class ConversationController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    /**
+     * Mark all unread messages in a conversation as seen
+     */
+    public function markAsSeen(Request $request, Conversation $conversation)
+    {
+        $user = $request->user();
+
+        $conversation->load('users');
+        if (!$conversation->users->contains($user->id)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $updated = Message::where('conversation_id', $conversation->id)
+            ->where('sender_id', '!=', $user->id)
+            ->where('seen', false)
+            ->update(['seen' => true]);
+
+        return response()->json([
+            'success' => true,
+            'marked_count' => $updated,
+        ]);
+    }
 }

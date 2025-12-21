@@ -103,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import api from '../../services/api'
 import Avatar from '../common/Avatar.vue'
 
@@ -211,10 +211,19 @@ watch(() => props.isOpen, (newVal) => {
   }
 })
 
+const handleConversationSeen = () => {
+  loadConversations()
+}
+
 onMounted(() => {
   if (props.isOpen) {
     loadData()
   }
+  window.addEventListener('conversation-seen', handleConversationSeen)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('conversation-seen', handleConversationSeen)
 })
 </script>
 

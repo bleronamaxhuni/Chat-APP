@@ -43,6 +43,7 @@ Route::middleware('web')->group(function () {
     Route::get('/conversations/{conversation}/messages', [ConversationController::class, 'messages'])->middleware('auth');
     Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'storeMessage'])->middleware('auth');
     Route::post('/conversations/{conversation}/typing', [ConversationController::class, 'typing'])->middleware('auth');
+    Route::post('/conversations/{conversation}/mark-as-seen', [ConversationController::class, 'markAsSeen'])->middleware('auth');
 });
 
 Route::view('/{any}', 'app')->where('any', '.*');

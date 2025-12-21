@@ -174,6 +174,7 @@ import MessageInput from './MessageInput.vue'
 import TypingIndicator from './TypingIndicator.vue'
 import Avatar from '../common/Avatar.vue'
 import echo from '../../services/echo'
+import api from '../../services/api'
 import { useAuthStore } from '../../stores/auth'
 
 const auth = useAuthStore()
@@ -228,6 +229,22 @@ const handleMessageSent = (newMessage) => {
   }
 }
 
+const markMessagesAsSeen = async (conversationId) => {
+  if (!conversationId) return
+  
+  try {
+    await api.post(`/conversations/${conversationId}/mark-as-seen`)
+    messages.value.forEach(msg => {
+      if (msg.sender_id !== auth.user?.id) {
+        msg.seen = true
+      }
+    })
+    window.dispatchEvent(new CustomEvent('conversation-seen', { detail: { conversationId } }))
+  } catch (error) {
+    console.error('Failed to mark messages as seen:', error)
+  }
+}
+
 const handleTyping = (isTyping) => {}
 
 const scrollToBottom = () => {
@@ -262,6 +279,9 @@ const setupChannelListener = (conversationId) => {
       if (!exists) {
         messages.value.push(data)
         scrollToBottom()
+        if (props.isOpen && !isMinimized.value && data.sender_id !== auth.user?.id) {
+          markMessagesAsSeen(conversationId)
+        }
       }
       isOtherUserTyping.value = false
     }
@@ -318,6 +338,7 @@ watch(
       
       if (newData.conversationId) {
         setupChannelListener(newData.conversationId)
+        markMessagesAsSeen(newData.conversationId)
       }
     } else {
       cleanupChannel()
@@ -334,6 +355,7 @@ watch(
       cleanupChannel()
     } else if (newVal && props.chatData?.conversationId) {
       setupChannelListener(props.chatData.conversationId)
+      markMessagesAsSeen(props.chatData.conversationId)
     }
   }
 )
