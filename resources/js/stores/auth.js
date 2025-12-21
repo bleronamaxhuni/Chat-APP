@@ -10,12 +10,25 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: state => !!state.user,
   },
   actions: {
-    async fetchUser() {
+    async fetchUser(skipIfNoSession = false) {
+      if (skipIfNoSession) {
+        const hasSession = document.cookie.includes('laravel-session=')
+        if (!hasSession) {
+          this.user = null
+          this.initialized = true
+          return
+        }
+      }
+
       try {
         const res = await api.get('/me')
         this.user = res.data
-      } catch {
-        this.user = null
+      } catch (error) {
+        if (error.response?.status === 401) {
+          this.user = null
+        } else {
+          this.user = null
+        }
       } finally {
         this.initialized = true
       }
@@ -34,8 +47,14 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async logout() {
-      await api.post('/logout')
-      this.user = null
+      try {
+        await api.post('/logout')
+      } catch (error) {
+        console.error('Logout error:', error)
+      } finally {
+        this.user = null
+        this.initialized = false
+      }
     }
   }
 })

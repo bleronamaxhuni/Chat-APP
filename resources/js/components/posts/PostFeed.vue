@@ -33,8 +33,6 @@ import PostForm from './PostForm.vue'
 import PostCard from './PostCard.vue'
 import api from '../../services/api'
 
-const auth = useAuthStore()
-
 const posts = ref([])
 const loading = ref(false)
 const creating = ref(false)
@@ -122,11 +120,6 @@ const handleCommentDeleted = (post, comment) => {
 
 onMounted(() => {
   loadPosts()
-  
-  // Double-check before calling loadPosts
-  if (auth.isAuthenticated) {
-    loadPosts()
-  }
 })
 
 defineExpose({

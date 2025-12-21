@@ -7,7 +7,7 @@ import { useAuthStore } from '../stores/auth'
 const routes = [
   { path: '/login', component: Login, meta: { guest: true } },
   { path: '/register', component: Register, meta: { guest: true } },
-  { path: '/', component: Dashboard, meta: { auth: true } },
+  { path: '/', component: Dashboard },
 ]
 
 const router = createRouter({
@@ -18,13 +18,22 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()
 
-  // Ensure we have attempted to load the current user before enforcing guards
   if (!auth.initialized) {
-    await auth.fetchUser()
+    const isGuestRoute = to.meta.guest
+    await auth.fetchUser(isGuestRoute)
   }
 
-  if (to.meta.auth && !auth.isAuthenticated) return next('/login')
-  if (to.meta.guest && auth.isAuthenticated) return next('/')
+  if (to.meta.guest) {
+    if (auth.isAuthenticated) {
+      return next('/')
+    }
+    return next()
+  }
+
+  if (!auth.isAuthenticated) {
+    return next({ path: '/login', query: { redirect: to.fullPath } })
+  }
+
   next()
 })
 

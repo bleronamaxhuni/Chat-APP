@@ -11,6 +11,14 @@ app.use(pinia)
 app.use(router)
 
 const auth = useAuthStore(pinia)
-auth.fetchUser().finally(() => {
+
+const currentPath = window.location.pathname
+const isGuestRoute = currentPath === '/login' || currentPath === '/register'
+
+if (isGuestRoute) {
   app.mount('#app')
-})
+} else {
+  auth.fetchUser().finally(() => {
+    app.mount('#app')
+  })
+}
