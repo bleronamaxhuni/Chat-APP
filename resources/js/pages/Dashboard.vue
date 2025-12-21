@@ -21,7 +21,12 @@
       </aside>
 
       <!-- Main Content -->
-      <main class="flex-1 min-w-0 p-3 sm:p-4 md:p-6 overflow-y-auto">
+      <main 
+        :class="[
+          'flex-1 min-w-0 p-3 sm:p-4 md:p-6 overflow-y-auto transition-all duration-300',
+          showConversations ? 'md:mr-60 lg:mr-80' : ''
+        ]"
+      >
         <PostFeed />
       </main>
 
