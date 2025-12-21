@@ -60,7 +60,11 @@ watch(() => props.comment, (newComment) => {
 
 const handleSubmit = () => {
   if (content.value.trim()) {
-    emit('submit', content.value.trim())
+    const trimmedContent = content.value.trim()
+    emit('submit', trimmedContent)
+    if (!isEditing.value) {
+      content.value = ''
+    }
   }
 }
 </script>
