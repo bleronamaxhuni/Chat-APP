@@ -7,6 +7,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Posts\PostController;
 use App\Http\Controllers\Posts\LikeController;
 use App\Http\Controllers\Posts\CommentController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function () {
@@ -16,6 +17,10 @@ Route::middleware('web')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
     Route::get('/me', [AuthController::class, 'me'])->middleware('auth');
     Route::post('/profile/image', [AuthController::class, 'updateProfileImage'])->middleware('auth');
+    Route::put('/profile', [AuthController::class, 'updateProfile'])->middleware('auth');
+    Route::put('/profile/password', [AuthController::class, 'updatePassword'])->middleware('auth');
+
+    Route::get('/users/search', [UserController::class, 'search'])->middleware('auth');
 
     Route::get('/friendships/suggested', [FriendshipController::class, 'suggested'])->middleware('auth');
     Route::get('/friendships/requests', [FriendshipController::class, 'requests'])->middleware('auth');

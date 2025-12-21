@@ -2,6 +2,20 @@
   <header class="relative bg-white shadow flex items-center justify-between px-3 sm:px-4 md:px-6 py-2 sm:py-3">
     <h1 class="text-lg sm:text-xl font-bold truncate">Chat App</h1>
     <div class="flex items-center space-x-2 sm:space-x-3 md:space-x-4 flex-shrink-0">
+      <UserSearch 
+        ref="userSearchRef"
+        @add-friend="$emit('add-friend', $event)"
+        @accept-friend="$emit('accept-friend', $event)"
+        @select-user="$emit('select-user', $event)"
+      />
+      <router-link
+        to="/settings"
+        class="relative p-2 rounded-full hover:bg-gray-100 focus:outline-none transition-colors"
+        aria-label="Account Settings"
+        title="Account Settings"
+      >
+        <i class="fa-solid fa-gear text-gray-700 text-sm sm:text-base"></i>
+      </router-link>
       <NotificationsDropdown
         :notifications="notifications"
         :is-open="showNotifications"
@@ -27,8 +41,16 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import NotificationsDropdown from './NotificationsDropdown.vue'
 import FriendRequestsDropdown from './FriendRequestsDropdown.vue'
+import UserSearch from './UserSearch.vue'
+
+const userSearchRef = ref(null)
+
+defineExpose({
+  userSearchRef,
+})
 
 defineProps({
   notifications: {
@@ -56,6 +78,9 @@ defineEmits([
   'toggle-notifications',
   'toggle-friend-requests',
   'mark-all-notifications-read',
+  'add-friend',
+  'accept-friend',
+  'select-user',
 ])
 </script>
 

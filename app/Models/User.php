@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Posts\Comment;
+use App\Models\Posts\Like;
+use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;

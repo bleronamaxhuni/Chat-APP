@@ -1,6 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col bg-gray-100">
     <DashboardHeader
+      ref="dashboardHeaderRef"
       :notifications="notifications"
       :friend-requests="friendRequests"
       :show-notifications="showNotifications"
@@ -11,6 +12,9 @@
       @toggle-notifications="toggleNotifications"
       @toggle-friend-requests="toggleFriendRequests"
       @mark-all-notifications-read="markAllNotificationsRead"
+      @add-friend="addFriend"
+      @accept-friend="handleAcceptFriendFromSearch"
+      @select-user="handleSelectUser"
     />
 
     <div class="flex flex-1 overflow-hidden relative">
@@ -105,6 +109,7 @@ const suggestedFriends = ref([])
 const showConversations = ref(false)
 const showChatWindow = ref(false)
 const currentChatData = ref(null)
+const dashboardHeaderRef = ref(null)
 
 const handleOpenChat = (chatData) => {
   currentChatData.value = {
@@ -134,11 +139,49 @@ const toggleFriendRequests = async () => {
 
 const addFriend = async (friend) => {
   try {
-    await api.post('/friendships', { user_id: friend.id })
+    const response = await api.post('/friendships', { user_id: friend.id })
     suggestedFriends.value = suggestedFriends.value.filter(f => f.id !== friend.id)
     await loadFriendRequests()
+    // Update the friend's status in search results if visible
+    if (dashboardHeaderRef.value?.userSearchRef) {
+      dashboardHeaderRef.value.userSearchRef.updateUserStatus(friend.id, 'pending_outgoing', response.data.id)
+    }
   } catch (e) {
     console.error('Failed to add friend', e)
+  }
+}
+
+const handleAcceptFriendFromSearch = async (user) => {
+  try {
+    if (!user.friendship_id) {
+      console.error('Friendship ID not found')
+      return
+    }
+    const response = await api.post(`/friendships/${user.friendship_id}/accept`)
+    await loadFriendRequests()
+    // Update the user's status in search results if visible
+    if (dashboardHeaderRef.value?.userSearchRef) {
+      dashboardHeaderRef.value.userSearchRef.updateUserStatus(user.id, 'friends', user.friendship_id)
+    }
+  } catch (e) {
+    console.error('Failed to accept friend request', e)
+  }
+}
+
+const handleSelectUser = async (user) => {
+  try {
+    const res = await api.get(`/conversations/user/${user.id}`)
+    handleOpenChat({
+      conversationId: res.data.conversation.id,
+      userId: res.data.conversation.user_id,
+      userName: user.name,
+      userEmail: user.email,
+      profile_image: user.profile_image || null,
+      messages: res.data.messages,
+    })
+    showConversations.value = true
+  } catch (error) {
+    console.error('Failed to open conversation with user:', error)
   }
 }
 
