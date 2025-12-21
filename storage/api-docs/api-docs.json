@@ -1,14 +1,28 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Swagger with Laravel",
+        "title": "Chat APP API",
+        "description": "API documentation for Chat Application - A social media chat application with posts, comments, likes, friendships, and real-time messaging",
+        "contact": {
+            "email": "support@chatapp.com"
+        },
         "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "API Server"
+        }
+    ],
     "paths": {
-        "/api/register": {
+        "/register": {
             "post": {
+                "tags": [
+                    "Authentication"
+                ],
                 "summary": "Register a new user",
-                "operationId": "8e4e3cb7b46126f4696379d3c7eeb4ad",
+                "description": "Register a new user account and automatically log them in",
+                "operationId": "5d4fa5d5607ed675ba93907e1fc94534",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -22,19 +36,25 @@
                                 ],
                                 "properties": {
                                     "name": {
-                                        "type": "string"
+                                        "description": "User's full name",
+                                        "type": "string",
+                                        "example": "John Doe"
                                     },
                                     "email": {
                                         "type": "string",
-                                        "format": "email"
+                                        "format": "email",
+                                        "example": "john@example.com"
                                     },
                                     "password": {
+                                        "description": "Minimum 8 characters",
                                         "type": "string",
-                                        "format": "password"
+                                        "format": "password",
+                                        "example": "password123"
                                     },
                                     "password_confirmation": {
                                         "type": "string",
-                                        "format": "password"
+                                        "format": "password",
+                                        "example": "password123"
                                     }
                                 },
                                 "type": "object"
@@ -44,12 +64,1968 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful registration"
+                        "description": "Successful registration",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Registration successful"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "422": {
                         "description": "Validation error"
                     }
                 }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login user",
+                "description": "Authenticate user and create session",
+                "operationId": "67d6d0fdd54fba132e1b6f55ca254183",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login successful"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout user",
+                "description": "Invalidate user session and log them out",
+                "operationId": "28d48c13fca984400ac8de99f54ee13a",
+                "responses": {
+                    "200": {
+                        "description": "Logout successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/me": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get current user",
+                "description": "Get authenticated user information",
+                "operationId": "bc2032a379aa97707ccc61511897c120",
+                "responses": {
+                    "200": {
+                        "description": "User information",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "John Doe"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "format": "email",
+                                            "example": "john@example.com"
+                                        },
+                                        "profile_image": {
+                                            "type": "string",
+                                            "example": "profile_images/abc123.jpg",
+                                            "nullable": true
+                                        },
+                                        "last_seen_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile/image": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Update profile image",
+                "description": "Upload and update user's profile image",
+                "operationId": "fdcbdb5a1a2820d087bef620da33b5b6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "profile_image"
+                                ],
+                                "properties": {
+                                    "profile_image": {
+                                        "description": "Profile image file (jpeg, png, jpg, gif, max 2MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile image updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile image updated successfully"
+                                        },
+                                        "profile_image": {
+                                            "type": "string",
+                                            "example": "http://example.com/storage/profile_images/abc123.jpg"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile": {
+            "put": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Update user profile",
+                "description": "Update user's name and email",
+                "operationId": "9e87afe7cdc492b6edf2b574e8c11dd4",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "User's full name",
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile updated successfully"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile/password": {
+            "put": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Update user password",
+                "description": "Change user's password",
+                "operationId": "9fe6c46c815fe23442a83105f9c13082",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "oldpassword123"
+                                    },
+                                    "password": {
+                                        "description": "Minimum 8 characters",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password updated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error or incorrect current password"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/conversations": {
+            "get": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Get all conversations",
+                "description": "Get all conversations for the authenticated user with last message and unread count",
+                "operationId": "5e013ca2cc574b38237e805084bc9a00",
+                "responses": {
+                    "200": {
+                        "description": "List of conversations",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "user_id": {
+                                                "type": "integer",
+                                                "example": 2
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Jane Doe"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email",
+                                                "example": "jane@example.com"
+                                            },
+                                            "profile_image": {
+                                                "type": "string",
+                                                "nullable": true
+                                            },
+                                            "lastMessage": {
+                                                "type": "string",
+                                                "example": "Hello!",
+                                                "nullable": true
+                                            },
+                                            "lastMessageAt": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "nullable": true
+                                            },
+                                            "unreadCount": {
+                                                "type": "integer",
+                                                "example": 3
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/conversations/friends": {
+            "get": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Get all friends",
+                "description": "Get all accepted friends for the authenticated user",
+                "operationId": "fc7d13d514f3fed1db07f4fd3efa9049",
+                "responses": {
+                    "200": {
+                        "description": "List of friends",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 2
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Jane Doe"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email",
+                                                "example": "jane@example.com"
+                                            },
+                                            "profile_image": {
+                                                "type": "string",
+                                                "nullable": true
+                                            },
+                                            "last_seen_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "nullable": true
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/conversations/user/{userId}": {
+            "get": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Get or create conversation with user",
+                "description": "Get or create a conversation with a specific friend",
+                "operationId": "d5e8b11ad2cffb1adaae7eb46145be89",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "User ID to get/create conversation with",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Conversation and messages",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "conversation": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Jane Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "jane@example.com"
+                                                },
+                                                "profile_image": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "messages": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "message": {
+                                                        "type": "string"
+                                                    },
+                                                    "sender_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "sender_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "seen": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Friendship not found or not accepted"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/conversations/{conversation}/messages": {
+            "get": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Get conversation messages",
+                "description": "Get all messages for a specific conversation",
+                "operationId": "fb103a417ca562becade563d39f4fe12",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "description": "Conversation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of messages",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "message": {
+                                                "type": "string",
+                                                "example": "Hello!"
+                                            },
+                                            "sender_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "sender_name": {
+                                                "type": "string",
+                                                "example": "John Doe"
+                                            },
+                                            "seen": {
+                                                "type": "boolean",
+                                                "example": false
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - user not part of conversation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Send a message",
+                "description": "Send a message in a conversation",
+                "operationId": "c1bdeb2aba5b4c3e9fc9608900fa5393",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "description": "Conversation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "message"
+                                ],
+                                "properties": {
+                                    "message": {
+                                        "description": "Message content (max 5000 characters)",
+                                        "type": "string",
+                                        "example": "Hello!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Message sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Hello!"
+                                        },
+                                        "sender_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "sender_name": {
+                                            "type": "string",
+                                            "example": "John Doe"
+                                        },
+                                        "seen": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - user not part of conversation"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/conversations/{conversation}/typing": {
+            "post": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Send typing indicator",
+                "description": "Broadcast typing indicator to other users in the conversation",
+                "operationId": "fc7f09f111393f97f9be280390cd499b",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "description": "Conversation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "is_typing"
+                                ],
+                                "properties": {
+                                    "is_typing": {
+                                        "description": "Whether user is typing",
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Typing indicator sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - user not part of conversation"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/conversations/{conversation}/mark-as-seen": {
+            "post": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Mark messages as seen",
+                "description": "Mark all unread messages in a conversation as seen",
+                "operationId": "c553bf0d961576a2223bfc998f7d5973",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "description": "Conversation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Messages marked as seen",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "marked_count": {
+                                            "description": "Number of messages marked as seen",
+                                            "type": "integer",
+                                            "example": 5
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - user not part of conversation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/friendships/suggested": {
+            "get": {
+                "tags": [
+                    "Friendships"
+                ],
+                "summary": "Get suggested friends",
+                "description": "Get list of suggested friends (users who were active yesterday and are not already friends)",
+                "operationId": "766030c1cc5c8f432851ea39846bf896",
+                "responses": {
+                    "200": {
+                        "description": "List of suggested friends",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Jane Doe"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email",
+                                                "example": "jane@example.com"
+                                            },
+                                            "profile_image": {
+                                                "type": "string",
+                                                "nullable": true
+                                            },
+                                            "last_seen_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "nullable": true
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/friendships": {
+            "post": {
+                "tags": [
+                    "Friendships"
+                ],
+                "summary": "Send friend request",
+                "description": "Send a friend request to another user",
+                "operationId": "319f5e39ba4d597087010c4e8eb6b836",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "description": "ID of the user to send friend request to",
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Friend request sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "requester_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "addressee_id": {
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "pending"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error or cannot add yourself as friend"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/friendships/{friendship}/accept": {
+            "post": {
+                "tags": [
+                    "Friendships"
+                ],
+                "summary": "Accept friend request",
+                "description": "Accept an incoming friend request",
+                "operationId": "cb0a39f0c13f060dc01173bbbd7eab96",
+                "parameters": [
+                    {
+                        "name": "friendship",
+                        "in": "path",
+                        "description": "Friendship ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Friend request accepted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "requester_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "addressee_id": {
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "accepted"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - not the recipient of the friend request"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/friendships/{friendship}/reject": {
+            "post": {
+                "tags": [
+                    "Friendships"
+                ],
+                "summary": "Reject friend request",
+                "description": "Reject an incoming friend request",
+                "operationId": "8a256f3ec111cb7206e1f7bf4d520806",
+                "parameters": [
+                    {
+                        "name": "friendship",
+                        "in": "path",
+                        "description": "Friendship ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Friend request rejected successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "requester_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "addressee_id": {
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "rejected"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - not the recipient of the friend request"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/friendships/requests": {
+            "get": {
+                "tags": [
+                    "Friendships"
+                ],
+                "summary": "Get friend requests",
+                "description": "Get all incoming and outgoing friend requests for the authenticated user",
+                "operationId": "b8797ae22ae0edcac074ab4b0d7923ec",
+                "responses": {
+                    "200": {
+                        "description": "List of friend requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "outgoing": {
+                                            "description": "Friend requests sent by the user",
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "requester_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "addressee_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "addressee": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "incoming": {
+                                            "description": "Friend requests received by the user",
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "requester_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "addressee_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "requester": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/notifications": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Get notifications",
+                "description": "Get recent notifications (last 5 minutes, max 50)",
+                "operationId": "0f031f66cd8c52bf73e89fb2d050ad83",
+                "responses": {
+                    "200": {
+                        "description": "List of notifications",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "string",
+                                                "example": "abc123"
+                                            },
+                                            "type": {
+                                                "type": "string",
+                                                "example": "App\\\\Notifications\\\\AppNotification"
+                                            },
+                                            "notifiable_type": {
+                                                "type": "string",
+                                                "example": "App\\\\Models\\\\User"
+                                            },
+                                            "notifiable_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "data": {
+                                                "type": "object"
+                                            },
+                                            "read_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "nullable": true
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/notifications/{notification}/read": {
+            "post": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Mark notification as read",
+                "description": "Mark a specific notification as read",
+                "operationId": "1f4e2729c9b19fafa9e69c05a0089034",
+                "parameters": [
+                    {
+                        "name": "notification",
+                        "in": "path",
+                        "description": "Notification ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "abc123"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Notification marked as read"
+                    },
+                    "404": {
+                        "description": "Notification not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/posts/{post}/comments": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Create a comment",
+                "description": "Add a comment to a post",
+                "operationId": "004486987ec126e0c5f845b4ac520594",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "description": "Post ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "description": "Comment content (max 1000 characters)",
+                                        "type": "string",
+                                        "example": "Great post!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Comment created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "content": {
+                                            "type": "string",
+                                            "example": "Great post!"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "profile_image": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/comments/{comment}": {
+            "put": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Update a comment",
+                "description": "Update an existing comment (only by the comment owner)",
+                "operationId": "b668b5a9e8ab42f5c826be1081a9869a",
+                "parameters": [
+                    {
+                        "name": "comment",
+                        "in": "path",
+                        "description": "Comment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "description": "Comment content (max 1000 characters)",
+                                        "type": "string",
+                                        "example": "Updated comment"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Comment updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "content": {
+                                            "type": "string"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - not the comment owner"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Delete a comment",
+                "description": "Delete a comment (only by the comment owner)",
+                "operationId": "666f67f84d0ba2d3c676698a42ae4b71",
+                "parameters": [
+                    {
+                        "name": "comment",
+                        "in": "path",
+                        "description": "Comment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comment deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - not the comment owner"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/posts/{post}/likes": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Toggle like on post",
+                "description": "Like or unlike a post. If already liked, it will unlike it.",
+                "operationId": "f5bd628f6ee4195877547a48227fc143",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "description": "Post ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Like toggled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "is_liked": {
+                                            "description": "Whether the post is currently liked by the user",
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "likes_count": {
+                                            "description": "Total number of likes on the post",
+                                            "type": "integer",
+                                            "example": 5
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/posts": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Get posts",
+                "description": "Get all posts from friends and self, ordered by creation date",
+                "operationId": "7a9bdabf13848bdfde24daba1dc7f574",
+                "responses": {
+                    "200": {
+                        "description": "List of posts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "content": {
+                                                "type": "string",
+                                                "example": "This is my post"
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "user": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "format": "email"
+                                                    },
+                                                    "profile_image": {
+                                                        "type": "string",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "likes_count": {
+                                                "type": "integer",
+                                                "example": 5
+                                            },
+                                            "is_liked": {
+                                                "type": "boolean",
+                                                "example": false
+                                            },
+                                            "comments": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "content": {
+                                                            "type": "string"
+                                                        },
+                                                        "created_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "user": {
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Create a post",
+                "description": "Create a new post",
+                "operationId": "929d0b37ce97ffab0f526648d528c3e6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "description": "Post content (max 5000 characters)",
+                                        "type": "string",
+                                        "example": "This is my new post"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Post created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "content": {
+                                            "type": "string",
+                                            "example": "This is my new post"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        },
+                                        "likes_count": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "is_liked": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "comments": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/posts/{post}": {
+            "put": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Update a post",
+                "description": "Update an existing post (only by the post owner)",
+                "operationId": "54a113119f718ce2e85c9d69e721d91e",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "description": "Post ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "description": "Post content (max 5000 characters)",
+                                        "type": "string",
+                                        "example": "Updated post content"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Post updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "content": {
+                                            "type": "string"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        },
+                                        "likes_count": {
+                                            "type": "integer"
+                                        },
+                                        "is_liked": {
+                                            "type": "boolean"
+                                        },
+                                        "comments": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - not the post owner"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Delete a post",
+                "description": "Delete a post (only by the post owner)",
+                "operationId": "19e87f6d639e4702aa38d9aea8db3cb2",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "description": "Post ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Post deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - not the post owner"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/users/search": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Search users",
+                "description": "Search for users by name or email",
+                "operationId": "20994571ae6f2f07d415b885f7c28471",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Search query (name or email)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "john"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of users matching the search query",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "John Doe"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email",
+                                                "example": "john@example.com"
+                                            },
+                                            "profile_image": {
+                                                "type": "string",
+                                                "nullable": true
+                                            },
+                                            "last_seen_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "nullable": true
+                                            },
+                                            "friendship_id": {
+                                                "type": "integer",
+                                                "nullable": true
+                                            },
+                                            "friendship_status": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "friends",
+                                                    "pending_outgoing",
+                                                    "pending_incoming"
+                                                ],
+                                                "nullable": true
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         }
     },
@@ -57,9 +2033,36 @@
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
+                "description": "Authentication using Laravel session-based authentication",
                 "bearerFormat": "JWT",
                 "scheme": "bearer"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "Conversations",
+            "description": "Conversations"
+        },
+        {
+            "name": "Friendships",
+            "description": "Friendships"
+        },
+        {
+            "name": "Notifications",
+            "description": "Notifications"
+        },
+        {
+            "name": "Posts",
+            "description": "Posts"
+        },
+        {
+            "name": "Users",
+            "description": "Users"
+        }
+    ]
 }

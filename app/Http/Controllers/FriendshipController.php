@@ -14,6 +14,29 @@ use App\Events\FriendRequestStatusChanged;
 
 class FriendshipController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/friendships/suggested",
+     *     tags={"Friendships"},
+     *     summary="Get suggested friends",
+     *     description="Get list of suggested friends (users who were active yesterday and are not already friends)",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of suggested friends",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Jane Doe"),
+     *                 @OA\Property(property="email", type="string", format="email", example="jane@example.com"),
+     *                 @OA\Property(property="profile_image", type="string", nullable=true),
+     *                 @OA\Property(property="last_seen_at", type="string", format="date-time", nullable=true)
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function suggested(Request $request)
     {
         $user = $request->user();
@@ -40,6 +63,35 @@ class FriendshipController extends Controller
         return response()->json($suggested);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/friendships",
+     *     tags={"Friendships"},
+     *     summary="Send friend request",
+     *     description="Send a friend request to another user",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"user_id"},
+     *             @OA\Property(property="user_id", type="integer", example=2, description="ID of the user to send friend request to")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Friend request sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="requester_id", type="integer", example=1),
+     *             @OA\Property(property="addressee_id", type="integer", example=2),
+     *             @OA\Property(property="status", type="string", example="pending"),
+     *             @OA\Property(property="created_at", type="string", format="date-time"),
+     *             @OA\Property(property="updated_at", type="string", format="date-time")
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Validation error or cannot add yourself as friend")
+     * )
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -71,6 +123,35 @@ class FriendshipController extends Controller
         return response()->json($friendship, 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/friendships/{friendship}/accept",
+     *     tags={"Friendships"},
+     *     summary="Accept friend request",
+     *     description="Accept an incoming friend request",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="friendship",
+     *         in="path",
+     *         required=true,
+     *         description="Friendship ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Friend request accepted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="requester_id", type="integer", example=1),
+     *             @OA\Property(property="addressee_id", type="integer", example=2),
+     *             @OA\Property(property="status", type="string", example="accepted"),
+     *             @OA\Property(property="created_at", type="string", format="date-time"),
+     *             @OA\Property(property="updated_at", type="string", format="date-time")
+     *         )
+     *     ),
+     *     @OA\Response(response=403, description="Unauthorized - not the recipient of the friend request")
+     * )
+     */
     public function accept(Request $request, Friendship $friendship)
     {
         $user = $request->user();
@@ -98,6 +179,35 @@ class FriendshipController extends Controller
         return response()->json($friendship);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/friendships/{friendship}/reject",
+     *     tags={"Friendships"},
+     *     summary="Reject friend request",
+     *     description="Reject an incoming friend request",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="friendship",
+     *         in="path",
+     *         required=true,
+     *         description="Friendship ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Friend request rejected successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="requester_id", type="integer", example=1),
+     *             @OA\Property(property="addressee_id", type="integer", example=2),
+     *             @OA\Property(property="status", type="string", example="rejected"),
+     *             @OA\Property(property="created_at", type="string", format="date-time"),
+     *             @OA\Property(property="updated_at", type="string", format="date-time")
+     *         )
+     *     ),
+     *     @OA\Response(response=403, description="Unauthorized - not the recipient of the friend request")
+     * )
+     */
     public function reject(Request $request, Friendship $friendship)
     {
         $user = $request->user();
@@ -121,6 +231,45 @@ class FriendshipController extends Controller
         return response()->json($friendship);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/friendships/requests",
+     *     tags={"Friendships"},
+     *     summary="Get friend requests",
+     *     description="Get all incoming and outgoing friend requests for the authenticated user",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of friend requests",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="outgoing",
+     *                 type="array",
+     *                 description="Friend requests sent by the user",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer"),
+     *                     @OA\Property(property="requester_id", type="integer"),
+     *                     @OA\Property(property="addressee_id", type="integer"),
+     *                     @OA\Property(property="status", type="string"),
+     *                     @OA\Property(property="addressee", type="object")
+     *                 )
+     *             ),
+     *             @OA\Property(
+     *                 property="incoming",
+     *                 type="array",
+     *                 description="Friend requests received by the user",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer"),
+     *                     @OA\Property(property="requester_id", type="integer"),
+     *                     @OA\Property(property="addressee_id", type="integer"),
+     *                     @OA\Property(property="status", type="string"),
+     *                     @OA\Property(property="requester", type="object")
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function requests(Request $request)
     {
         $user = $request->user();

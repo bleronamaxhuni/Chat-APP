@@ -10,6 +10,39 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/users/search",
+     *     tags={"Users"},
+     *     summary="Search users",
+     *     description="Search for users by name or email",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="q",
+     *         in="query",
+     *         required=true,
+     *         description="Search query (name or email)",
+     *         @OA\Schema(type="string", example="john")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of users matching the search query",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="John Doe"),
+     *                 @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *                 @OA\Property(property="profile_image", type="string", nullable=true),
+     *                 @OA\Property(property="last_seen_at", type="string", format="date-time", nullable=true),
+     *                 @OA\Property(property="friendship_id", type="integer", nullable=true),
+     *                 @OA\Property(property="friendship_status", type="string", nullable=true, enum={"friends", "pending_outgoing", "pending_incoming"})
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function search(Request $request)
     {
         $request->validate([

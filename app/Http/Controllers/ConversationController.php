@@ -15,7 +15,30 @@ use Illuminate\Support\Facades\Auth;
 class ConversationController extends Controller
 {
     /**
-     * Get all conversations for the authenticated user
+     * @OA\Get(
+     *     path="/conversations",
+     *     tags={"Conversations"},
+     *     summary="Get all conversations",
+     *     description="Get all conversations for the authenticated user with last message and unread count",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of conversations",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="user_id", type="integer", example=2),
+     *                 @OA\Property(property="name", type="string", example="Jane Doe"),
+     *                 @OA\Property(property="email", type="string", format="email", example="jane@example.com"),
+     *                 @OA\Property(property="profile_image", type="string", nullable=true),
+     *                 @OA\Property(property="lastMessage", type="string", nullable=true, example="Hello!"),
+     *                 @OA\Property(property="lastMessageAt", type="string", format="date-time", nullable=true),
+     *                 @OA\Property(property="unreadCount", type="integer", example=3)
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function index(Request $request)
     {
@@ -52,7 +75,27 @@ class ConversationController extends Controller
     }
 
     /**
-     * Get all accepted friends for the authenticated user
+     * @OA\Get(
+     *     path="/conversations/friends",
+     *     tags={"Conversations"},
+     *     summary="Get all friends",
+     *     description="Get all accepted friends for the authenticated user",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of friends",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=2),
+     *                 @OA\Property(property="name", type="string", example="Jane Doe"),
+     *                 @OA\Property(property="email", type="string", format="email", example="jane@example.com"),
+     *                 @OA\Property(property="profile_image", type="string", nullable=true),
+     *                 @OA\Property(property="last_seen_at", type="string", format="date-time", nullable=true)
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function friends(Request $request)
     {
@@ -84,7 +127,48 @@ class ConversationController extends Controller
     }
 
     /**
-     * Get or create a conversation with a specific user
+     * @OA\Get(
+     *     path="/conversations/user/{userId}",
+     *     tags={"Conversations"},
+     *     summary="Get or create conversation with user",
+     *     description="Get or create a conversation with a specific friend",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="userId",
+     *         in="path",
+     *         required=true,
+     *         description="User ID to get/create conversation with",
+     *         @OA\Schema(type="integer", example=2)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Conversation and messages",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="conversation",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="user_id", type="integer", example=2),
+     *                 @OA\Property(property="name", type="string", example="Jane Doe"),
+     *                 @OA\Property(property="email", type="string", format="email", example="jane@example.com"),
+     *                 @OA\Property(property="profile_image", type="string", nullable=true)
+     *             ),
+     *             @OA\Property(
+     *                 property="messages",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer"),
+     *                     @OA\Property(property="message", type="string"),
+     *                     @OA\Property(property="sender_id", type="integer"),
+     *                     @OA\Property(property="sender_name", type="string"),
+     *                     @OA\Property(property="seen", type="boolean"),
+     *                     @OA\Property(property="created_at", type="string", format="date-time")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Friendship not found or not accepted")
+     * )
      */
     public function getOrCreate(Request $request, $userId)
     {
@@ -148,7 +232,36 @@ class ConversationController extends Controller
     }
 
     /**
-     * Get messages for a conversation
+     * @OA\Get(
+     *     path="/conversations/{conversation}/messages",
+     *     tags={"Conversations"},
+     *     summary="Get conversation messages",
+     *     description="Get all messages for a specific conversation",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="conversation",
+     *         in="path",
+     *         required=true,
+     *         description="Conversation ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of messages",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="message", type="string", example="Hello!"),
+     *                 @OA\Property(property="sender_id", type="integer", example=1),
+     *                 @OA\Property(property="sender_name", type="string", example="John Doe"),
+     *                 @OA\Property(property="seen", type="boolean", example=false),
+     *                 @OA\Property(property="created_at", type="string", format="date-time")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=403, description="Unauthorized - user not part of conversation")
+     * )
      */
     public function messages(Request $request, Conversation $conversation)
     {
@@ -178,7 +291,41 @@ class ConversationController extends Controller
     }
 
     /**
-     * Send a message in a conversation
+     * @OA\Post(
+     *     path="/conversations/{conversation}/messages",
+     *     tags={"Conversations"},
+     *     summary="Send a message",
+     *     description="Send a message in a conversation",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="conversation",
+     *         in="path",
+     *         required=true,
+     *         description="Conversation ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"message"},
+     *             @OA\Property(property="message", type="string", example="Hello!", description="Message content (max 5000 characters)")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Message sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="message", type="string", example="Hello!"),
+     *             @OA\Property(property="sender_id", type="integer", example=1),
+     *             @OA\Property(property="sender_name", type="string", example="John Doe"),
+     *             @OA\Property(property="seen", type="boolean", example=false),
+     *             @OA\Property(property="created_at", type="string", format="date-time")
+     *         )
+     *     ),
+     *     @OA\Response(response=403, description="Unauthorized - user not part of conversation"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
      */
     public function storeMessage(Request $request, Conversation $conversation)
     {
@@ -216,7 +363,36 @@ class ConversationController extends Controller
     }
 
     /**
-     * Broadcast typing indicator
+     * @OA\Post(
+     *     path="/conversations/{conversation}/typing",
+     *     tags={"Conversations"},
+     *     summary="Send typing indicator",
+     *     description="Broadcast typing indicator to other users in the conversation",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="conversation",
+     *         in="path",
+     *         required=true,
+     *         description="Conversation ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"is_typing"},
+     *             @OA\Property(property="is_typing", type="boolean", example=true, description="Whether user is typing")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Typing indicator sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true)
+     *         )
+     *     ),
+     *     @OA\Response(response=403, description="Unauthorized - user not part of conversation"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
      */
     public function typing(Request $request, Conversation $conversation)
     {
@@ -242,7 +418,29 @@ class ConversationController extends Controller
     }
 
     /**
-     * Mark all unread messages in a conversation as seen
+     * @OA\Post(
+     *     path="/conversations/{conversation}/mark-as-seen",
+     *     tags={"Conversations"},
+     *     summary="Mark messages as seen",
+     *     description="Mark all unread messages in a conversation as seen",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="conversation",
+     *         in="path",
+     *         required=true,
+     *         description="Conversation ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Messages marked as seen",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="marked_count", type="integer", example=5, description="Number of messages marked as seen")
+     *         )
+     *     ),
+     *     @OA\Response(response=403, description="Unauthorized - user not part of conversation")
+     * )
      */
     public function markAsSeen(Request $request, Conversation $conversation)
     {

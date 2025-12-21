@@ -10,6 +10,46 @@ use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/posts/{post}/comments",
+     *     tags={"Posts"},
+     *     summary="Create a comment",
+     *     description="Add a comment to a post",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="post",
+     *         in="path",
+     *         required=true,
+     *         description="Post ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"content"},
+     *             @OA\Property(property="content", type="string", example="Great post!", description="Comment content (max 1000 characters)")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Comment created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="content", type="string", example="Great post!"),
+     *             @OA\Property(property="created_at", type="string", format="date-time"),
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="profile_image", type="string", nullable=true)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function store(Request $request, Post $post)
     {
         $request->validate([
@@ -44,6 +84,41 @@ class CommentController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/comments/{comment}",
+     *     tags={"Posts"},
+     *     summary="Update a comment",
+     *     description="Update an existing comment (only by the comment owner)",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="comment",
+     *         in="path",
+     *         required=true,
+     *         description="Comment ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"content"},
+     *             @OA\Property(property="content", type="string", example="Updated comment", description="Comment content (max 1000 characters)")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Comment updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="content", type="string"),
+     *             @OA\Property(property="created_at", type="string", format="date-time"),
+     *             @OA\Property(property="user", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=403, description="Unauthorized - not the comment owner"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function update(Request $request, Comment $comment)
     {
         if ($comment->user_id !== $request->user()->id) {
@@ -72,6 +147,30 @@ class CommentController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/comments/{comment}",
+     *     tags={"Posts"},
+     *     summary="Delete a comment",
+     *     description="Delete a comment (only by the comment owner)",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="comment",
+     *         in="path",
+     *         required=true,
+     *         description="Comment ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Comment deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Comment deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=403, description="Unauthorized - not the comment owner")
+     * )
+     */
     public function destroy(Request $request, Comment $comment)
     {
         if ($comment->user_id !== $request->user()->id) {

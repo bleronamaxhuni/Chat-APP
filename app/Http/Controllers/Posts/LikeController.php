@@ -10,6 +10,30 @@ use Illuminate\Http\Request;
 
 class LikeController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/posts/{post}/likes",
+     *     tags={"Posts"},
+     *     summary="Toggle like on post",
+     *     description="Like or unlike a post. If already liked, it will unlike it.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="post",
+     *         in="path",
+     *         required=true,
+     *         description="Post ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Like toggled successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="is_liked", type="boolean", example=true, description="Whether the post is currently liked by the user"),
+     *             @OA\Property(property="likes_count", type="integer", example=5, description="Total number of likes on the post")
+     *         )
+     *     )
+     * )
+     */
     public function store(Request $request, Post $post)
     {
         $user = $request->user();
