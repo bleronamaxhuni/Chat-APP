@@ -3,7 +3,7 @@
   <div
     v-if="isOpen && chatData && isMinimized"
     :class="[
-      'fixed bottom-0 bg-white border-l border-t flex items-center justify-between p-2 sm:p-3 transition-all duration-300 z-40 shadow-lg cursor-pointer hover:bg-gray-50',
+      'fixed bottom-0 glass backdrop-blur-xl border-l border-t border-white/20 flex items-center justify-between p-3 sm:p-4 transition-all duration-300 z-40 shadow-2xl cursor-pointer hover:bg-white/80',
       'w-full md:w-96',
       sidebarOpen ? 'md:right-96' : 'md:right-25',
       isOpen ? 'translate-x-0' : 'translate-x-full'
@@ -11,12 +11,15 @@
     @click="toggleMinimize"
   >
     <div class="flex items-center gap-3 flex-1 min-w-0">
-      <Avatar
-        :user="chatUser"
-        size="sm"
-      />
+      <div class="relative">
+        <Avatar
+          :user="chatUser"
+          size="sm"
+        />
+        <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+      </div>
       <div class="flex-1 min-w-0">
-        <h3 class="font-semibold text-sm truncate">{{ chatData.userName }}</h3>
+        <h3 class="font-semibold text-sm text-gray-900 truncate">{{ chatData.userName }}</h3>
         <p class="text-xs text-gray-500 truncate">
           {{ messages.length > 0 ? messages[messages.length - 1].message : 'No messages' }}
         </p>
@@ -25,41 +28,17 @@
     <div class="flex items-center gap-2">
       <button
         @click.stop="toggleMinimize"
-        class="text-gray-500 hover:text-gray-700 p-1.5 hover:bg-gray-100 rounded transition-colors flex-shrink-0"
+        class="text-gray-500 hover:text-indigo-600 p-2 hover:bg-indigo-50 rounded-xl transition-all duration-200 flex-shrink-0"
         title="Restore"
       >
-        <svg
-          class="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-          />
-        </svg>
+        <i class="fa-solid fa-window-maximize text-sm"></i>
       </button>
       <button
         @click.stop="close"
-        class="text-gray-500 hover:text-gray-700 p-1.5 hover:bg-gray-100 rounded transition-colors flex-shrink-0"
+        class="text-gray-500 hover:text-red-600 p-2 hover:bg-red-50 rounded-xl transition-all duration-200 flex-shrink-0"
         title="Close"
       >
-        <svg
-          class="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
+        <i class="fa-solid fa-times text-sm"></i>
       </button>
     </div>
   </div>
@@ -78,61 +57,43 @@
       'fixed bottom-0 right-0',
       'w-full md:w-96',
       'h-screen md:h-100',
-      'bg-white border-l flex flex-col transition-all duration-300 overflow-hidden z-[60] md:z-40 shadow-lg',
+      'glass backdrop-blur-xl border-l border-white/20 flex flex-col transition-all duration-300 overflow-hidden z-[60] md:z-40 shadow-2xl',
       sidebarOpen ? 'md:right-80' : 'md:right-25',
       isOpen ? 'translate-x-0 translate-y-0' : 'translate-x-full md:translate-y-0 translate-y-full'
     ]"
   >
     <!-- Header -->
-    <div class="flex items-center justify-between p-3 sm:p-4 border-b flex-shrink-0">
-      <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-        <Avatar
-          :user="chatUser"
-          size="md"
-        />
+    <div class="flex items-center justify-between p-4 border-b border-white/20 flex-shrink-0 bg-white/50">
+      <div class="flex items-center gap-3 flex-1 min-w-0">
+        <div class="relative">
+          <Avatar
+            :user="chatUser"
+            size="md"
+          />
+          <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+        </div>
         <div class="flex-1 min-w-0">
-          <h3 class="font-semibold text-sm sm:text-base truncate">{{ chatData.userName }}</h3>
-          <p class="text-xs text-gray-500">Active now</p>
+          <h3 class="font-semibold text-base text-gray-900 truncate">{{ chatData.userName }}</h3>
+          <p class="text-xs text-gray-500 flex items-center gap-1">
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            Active now
+          </p>
         </div>
       </div>
-      <div class="flex items-center gap-1 sm:gap-2">
+      <div class="flex items-center gap-2">
         <button
           @click="toggleMinimize"
-          class="hidden md:flex text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+          class="hidden md:flex text-gray-500 hover:text-indigo-600 p-2 hover:bg-indigo-50 rounded-xl transition-all duration-200 flex-shrink-0"
           title="Minimize"
         >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M20 12H4"
-            />
-          </svg>
+          <i class="fa-solid fa-window-minimize text-sm"></i>
         </button>
         <button
           @click="close"
-          class="text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+          class="text-gray-500 hover:text-red-600 p-2 hover:bg-red-50 rounded-xl transition-all duration-200 flex-shrink-0"
           title="Close"
         >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
+          <i class="fa-solid fa-times text-sm"></i>
         </button>
       </div>
     </div>
@@ -140,10 +101,16 @@
     <!-- Messages Area -->
     <div
       ref="messagesContainer"
-      class="flex-1 overflow-y-auto p-3 sm:p-4 pb-2 bg-gray-50"
+      class="flex-1 overflow-y-auto p-4 pb-2 bg-gradient-to-b from-gray-50 to-white"
     >
-      <div v-if="messages.length === 0" class="flex items-center justify-center h-full text-gray-500 text-sm">
-        <p class="text-center">No messages yet.<br />Start the conversation!</p>
+      <div v-if="messages.length === 0" class="flex items-center justify-center h-full">
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+            <i class="fa-solid fa-comments text-2xl text-indigo-500"></i>
+          </div>
+          <p class="text-gray-500 text-sm font-medium">No messages yet</p>
+          <p class="text-gray-400 text-xs mt-1">Start the conversation!</p>
+        </div>
       </div>
       <MessageBubble
         v-for="message in messages"

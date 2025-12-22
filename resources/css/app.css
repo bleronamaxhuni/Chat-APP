@@ -8,4 +8,120 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Modern Color Palette */
+    --color-primary: #6366f1;
+    --color-primary-dark: #4f46e5;
+    --color-primary-light: #818cf8;
+    --color-secondary: #8b5cf6;
+    --color-accent: #ec4899;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --gradient-secondary: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+    --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    --gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+}
+
+/* Global Styles */
+* {
+    @apply transition-colors duration-200;
+}
+
+body {
+    @apply antialiased;
+    background: var(--gradient-bg);
+}
+
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full hover:bg-gray-400;
+}
+
+/* Glassmorphism Utility */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Modern Card */
+.card-modern {
+    @apply bg-white rounded-2xl shadow-lg;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-modern:hover {
+    @apply shadow-xl;
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+button{
+    @apply cursor-pointer;
+}
+/* Gradient Button */
+.btn-gradient {
+    background: var(--gradient-primary);
+    @apply text-white font-semibold px-6 py-3 rounded-xl shadow-lg;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    @apply shadow-xl;
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+/* Smooth Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Pulse Animation for Notifications */
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(1.4);
+        opacity: 0;
+    }
+}
+
+.animate-pulse-ring {
+    animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

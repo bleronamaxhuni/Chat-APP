@@ -1,28 +1,28 @@
 <template>
   <div
     :class="[
-      'mb-3 flex',
+      'mb-4 flex animate-fade-in',
       isOwnMessage ? 'justify-end' : 'justify-start'
     ]"
   >
     <div
       :class="[
-        'max-w-[75%] px-3 py-2 rounded-lg text-sm',
+        'max-w-[75%] px-4 py-3 rounded-2xl text-sm shadow-sm',
         isOwnMessage
-          ? 'bg-blue-500 text-white'
-          : 'bg-gray-200 text-gray-800'
+          ? 'bg-gradient-to-br from-indigo-500 to-purple-500 text-white rounded-br-md'
+          : 'bg-white text-gray-800 border border-gray-200 rounded-bl-md'
       ]"
     >
-      <p class="text-sm">{{ message.message }}</p>
+      <p class="text-sm leading-relaxed">{{ message.message }}</p>
       <div
         :class="[
-          'flex items-center gap-1 mt-1',
+          'flex items-center gap-1.5 mt-2',
         ]"
       >
         <p
           :class="[
             'text-xs',
-            isOwnMessage ? 'text-blue-100' : 'text-gray-500'
+            isOwnMessage ? 'text-indigo-100' : 'text-gray-500'
           ]"
         >
           {{ formatTime(message.created_at) }}
@@ -30,11 +30,11 @@
         <span
           v-if="isOwnMessage && message.seen"
           :class="[
-            'text-xs',
-            'text-blue-100'
+            'text-xs flex items-center gap-1',
+            'text-indigo-100'
           ]"
         >
-          • Seen
+          <i class="fa-solid fa-check-double text-xs"></i>Seen
         </span>
       </div>
     </div>

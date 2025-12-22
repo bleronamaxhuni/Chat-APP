@@ -1,21 +1,25 @@
 <template>
-  <div class="border-t bg-white p-3 flex-shrink-0">
-    <form @submit.prevent="sendMessage" class="flex gap-2">
+  <div class="border-t border-white/20 bg-white/50 backdrop-blur-sm p-4 flex-shrink-0">
+    <form @submit.prevent="sendMessage" class="flex gap-3">
       <input
         v-model="messageText"
         type="text"
         placeholder="Type a message..."
-        class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="flex-1 px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/80"
         :disabled="sending"
         @input="handleInput"
       />
       <button
         type="submit"
         :disabled="!messageText.trim() || sending"
-        class="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        class="px-6 py-3 text-sm bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 font-medium"
       >
-        <span v-if="!sending">Send</span>
-        <span v-else>Sending...</span>
+        <span v-if="!sending">
+          <i class="fa-solid fa-paper-plane mr-2"></i>Send
+        </span>
+        <span v-else class="flex items-center gap-2">
+          <i class="fa-solid fa-spinner fa-spin"></i>Sending...
+        </span>
       </button>
     </form>
   </div>

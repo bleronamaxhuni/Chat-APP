@@ -1,11 +1,16 @@
 <template>
   <div class="min-h-screen bg-gray-100">
     <DashboardHeader
-      :notifications="[]"
-      :friend-requests="{ pending: [] }"
-      :show-notifications="false"
-      :show-friend-requests="false"
+      :notifications="notifications"
+      :friend-requests="friendRequests"
+      :show-notifications="showNotifications"
+      :show-friend-requests="showFriendRequests"
       @logout="logout"
+      @accept-request="acceptRequest"
+      @reject-request="rejectRequest"
+      @toggle-notifications="toggleNotifications"
+      @toggle-friend-requests="toggleFriendRequests"
+      @mark-all-notifications-read="markAllNotificationsRead"
     />
 
     <div class="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
@@ -219,9 +224,26 @@ import { useRouter } from 'vue-router'
 import api from '../services/api'
 import DashboardHeader from '../components/dashboard/DashboardHeader.vue'
 import Avatar from '../components/common/Avatar.vue'
+import { useNotifications } from '../composables/useNotifications'
+import { useFriendRequests } from '../composables/useFriendRequests'
 
 const auth = useAuthStore()
 const router = useRouter()
+
+const {
+  notifications,
+  showNotifications,
+  markAllNotificationsRead,
+  toggleNotifications: toggleNotificationsComposable,
+  loadNotifications,
+} = useNotifications()
+
+const {
+  friendRequests,
+  showFriendRequests,
+  toggleFriendRequests: toggleFriendRequestsComposable,
+  loadFriendRequests,
+} = useFriendRequests()
 
 const profileData = ref({
   name: '',
@@ -246,7 +268,7 @@ const passwordSuccess = ref('')
 const passwordError = ref('')
 const updatingPassword = ref(false)
 
-onMounted(() => {
+onMounted(async () => {
   if (auth.user) {
     profileData.value = {
       name: auth.user.name || '',
@@ -254,7 +276,43 @@ onMounted(() => {
       profile_image: auth.user.profile_image || null,
     }
   }
+  
+  await loadNotifications()
+  await loadFriendRequests()
 })
+
+const toggleNotifications = async () => {
+  await toggleNotificationsComposable()
+}
+
+const toggleFriendRequests = async () => {
+  await toggleFriendRequestsComposable()
+}
+
+const acceptRequest = async (notification) => {
+  try {
+    await api.post(`/friendships/${notification.data.friendship_id}/accept`)
+    const index = notifications.value.findIndex(n => n.id === notification.id)
+    if (index !== -1) {
+      notifications.value.splice(index, 1)
+    }
+    await loadFriendRequests()
+  } catch (e) {
+    console.error('Failed to accept friend request', e)
+  }
+}
+
+const rejectRequest = async (notification) => {
+  try {
+    await api.post(`/friendships/${notification.data.friendship_id}/reject`)
+    const index = notifications.value.findIndex(n => n.id === notification.id)
+    if (index !== -1) {
+      notifications.value.splice(index, 1)
+    }
+  } catch (e) {
+    console.error('Failed to reject friend request', e)
+  }
+}
 
 const logout = async () => {
   await auth.logout()

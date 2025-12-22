@@ -1,44 +1,47 @@
 <template>
-  <div class="bg-white p-3 sm:p-4 rounded-lg shadow mb-3 sm:mb-4">
+  <div class="card-modern p-4 sm:p-6 mb-4 sm:mb-6 animate-fade-in">
     <!-- Post Header -->
-    <div class="flex items-center justify-between mb-2 sm:mb-3">
-      <div class="flex items-center gap-2 flex-1 min-w-0">
-        <Avatar :user="post.user" size="md" />
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3 flex-1 min-w-0">
+        <div class="relative">
+          <Avatar :user="post.user" size="md" />
+          <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+        </div>
         <div class="min-w-0 flex-1">
-          <h4 class="font-semibold text-sm sm:text-base truncate">{{ post.user.name }}</h4>
-          <p class="text-xs text-gray-500">{{ formatDate(post.created_at) }}</p>
+          <h4 class="font-semibold text-base sm:text-lg text-gray-900 truncate">{{ post.user.name }}</h4>
+          <p class="text-xs sm:text-sm text-gray-500">{{ formatDate(post.created_at) }}</p>
         </div>
       </div>
       <div v-if="canEdit(post)" class="relative" ref="menuRef">
         <button
           @click.stop="showMenu = !showMenu"
-          class="text-gray-500 hover:text-gray-700"
+          class="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200"
         >
-          ⋮
+          <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
         <div
           v-if="showMenu"
-          class="absolute right-0 mt-1 w-32 bg-white border rounded-lg shadow-lg z-10"
+          class="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-xl shadow-xl z-10 overflow-hidden"
         >
           <button
             @click="handleEdit"
-            class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+            class="block w-full text-left px-4 py-2.5 hover:bg-indigo-50 text-sm text-gray-700 hover:text-indigo-600 transition-colors"
           >
-            Edit
+            <i class="fa-solid fa-pen mr-2"></i>Edit
           </button>
           <button
             @click="handleDelete"
-            class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-600"
+            class="block w-full text-left px-4 py-2.5 hover:bg-red-50 text-sm text-red-600 transition-colors"
           >
-            Delete
+            <i class="fa-solid fa-trash mr-2"></i>Delete
           </button>
         </div>
       </div>
     </div>
 
     <!-- Post Content -->
-    <div v-if="!isEditing" class="mb-2 sm:mb-3">
-      <p class="text-gray-800 whitespace-pre-wrap text-sm sm:text-base break-words">{{ post.content }}</p>
+    <div v-if="!isEditing" class="mb-4">
+      <p class="text-gray-800 whitespace-pre-wrap text-sm sm:text-base break-words leading-relaxed">{{ post.content }}</p>
     </div>
     <PostForm
       v-else
@@ -49,29 +52,35 @@
     />
 
     <!-- Post Actions -->
-    <div v-if="!isEditing" class="flex items-center gap-2 sm:gap-4 pt-2 sm:pt-3 border-t">
+    <div v-if="!isEditing" class="flex items-center gap-4 pt-4 border-t border-gray-100">
       <button
         @click="handleLike"
         :class="[
-          'flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 rounded-lg transition-colors text-sm sm:text-base',
+          'flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 text-sm sm:text-base font-medium',
           post.is_liked
-            ? 'bg-red-50 text-red-600 hover:bg-red-100'
-            : 'text-gray-600 hover:bg-gray-100'
+            ? 'bg-gradient-to-r from-red-50 to-pink-50 text-red-600 hover:from-red-100 hover:to-pink-100 shadow-sm'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
         ]"
       >
-        <span>{{ post.is_liked ? '❤️' : '🤍' }}</span>
+        <i :class="post.is_liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
         <span>{{ post.likes_count }}</span>
       </button>
       <button
         @click="showComments = !showComments"
-        class="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-100 text-sm sm:text-base"
+        :class="[
+          'flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 text-sm sm:text-base font-medium',
+          showComments
+            ? 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+        ]"
       >
-        💬 {{ post.comments.length }}
+        <i class="fa-regular fa-comment"></i>
+        <span>{{ post.comments.length }}</span>
       </button>
     </div>
 
     <!-- Comments Section -->
-    <div v-if="showComments" class="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t">
+    <div v-if="showComments" class="mt-4 pt-4 border-t border-gray-100 space-y-3">
       <CommentList
         :comments="post.comments"
         @update="handleCommentUpdate"

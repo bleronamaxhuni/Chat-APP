@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-100">
+  <div class="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
     <DashboardHeader
       ref="dashboardHeaderRef"
       :notifications="notifications"
@@ -19,7 +19,7 @@
 
     <div class="flex flex-1 overflow-hidden relative">
       <!-- Left Sidebar - Hidden on mobile, visible on md+ -->
-      <aside class="hidden md:flex w-64 lg:w-72 bg-white border-r p-3 lg:p-4 flex-col overflow-y-auto flex-shrink-0">
+      <aside class="hidden md:flex w-64 lg:w-72 glass border-r border-white/20 p-3 lg:p-4 flex-col overflow-y-auto flex-shrink-0 backdrop-blur-xl">
         <UserProfile :profile="profile" />
         <SuggestedFriendsList :friends="suggestedFriends" @add-friend="addFriend" />
       </aside>
@@ -49,13 +49,14 @@
         @close="closeChatWindow"
       />
 
-      <!-- Chat Button - Responsive positioning -->
+      <!-- Chat Button - Modern Floating Action Button -->
       <button
         @click="showConversations = !showConversations"
-        class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-blue-500 text-white p-3 sm:p-4 rounded-full shadow-lg hover:bg-blue-600 transition-colors z-30"
+        class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-gradient-to-r from-indigo-500 to-purple-500 text-white p-4 sm:p-5 rounded-2xl shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 z-30 group hover:scale-110"
         aria-label="Open conversations"
       >
-        <span class="text-xl sm:text-2xl">💬</span>
+        <i class="fa-solid fa-comments text-xl sm:text-2xl group-hover:scale-110 transition-transform"></i>
+        <span class="absolute -top-1 -right-1 w-3 h-3 bg-pink-500 rounded-full animate-pulse"></span>
       </button>
     </div>
   </div>

@@ -1,21 +1,83 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="w-full max-w-md bg-white p-6 rounded shadow">
-      <h2 class="text-2xl font-bold mb-4 text-center">Register</h2>
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4">
+    <div class="w-full max-w-md glass backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/20 animate-fade-in">
+      <!-- Logo/Icon -->
+      <div class="flex justify-center mb-6">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg">
+          <i class="fa-solid fa-user-plus text-white text-2xl"></i>
+        </div>
+      </div>
 
-      <form @submit.prevent="submit">
-        <input v-model="form.name" type="text" placeholder="Name" class="w-full mb-3 px-3 py-2 border rounded" />
-        <input v-model="form.email" type="email" placeholder="Email" class="w-full mb-3 px-3 py-2 border rounded" />
-        <input v-model="form.password" type="password" placeholder="Password" class="w-full mb-3 px-3 py-2 border rounded" />
-        <input v-model="form.password_confirmation" type="password" placeholder="Confirm Password" class="w-full mb-3 px-3 py-2 border rounded" />
+      <h2 class="text-3xl font-bold mb-2 text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+        Create Account
+      </h2>
+      <p class="text-gray-500 text-center mb-8 text-sm">Join Chat App and start connecting</p>
 
-        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Register</button>
+      <form @submit.prevent="submit" class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <i class="fa-solid fa-user mr-2 text-indigo-500"></i>Full Name
+          </label>
+          <input 
+            v-model="form.name" 
+            type="text" 
+            placeholder="Enter your name" 
+            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/50" 
+          />
+        </div>
 
-        <p v-if="error" class="text-red-500 mt-2">{{ error }}</p>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <i class="fa-solid fa-envelope mr-2 text-indigo-500"></i>Email
+          </label>
+          <input 
+            v-model="form.email" 
+            type="email" 
+            placeholder="Enter your email" 
+            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/50" 
+          />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <i class="fa-solid fa-lock mr-2 text-indigo-500"></i>Password
+          </label>
+          <input 
+            v-model="form.password" 
+            type="password" 
+            placeholder="Create a password" 
+            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/50" 
+          />
+        </div>
 
-        <p class="mt-3 text-sm">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <i class="fa-solid fa-lock mr-2 text-indigo-500"></i>Confirm Password
+          </label>
+          <input 
+            v-model="form.password_confirmation" 
+            type="password" 
+            placeholder="Confirm your password" 
+            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/50" 
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full btn-gradient py-3 rounded-xl font-semibold text-base hover:scale-[1.02] active:scale-[0.98] transition-transform"
+        >
+          <i class="fa-solid fa-user-plus mr-2"></i>Create Account
+        </button>
+
+        <p v-if="error" class="text-red-500 mt-2 text-sm text-center bg-red-50 p-3 rounded-xl border border-red-200">
+          <i class="fa-solid fa-circle-exclamation mr-2"></i>{{ error }}
+        </p>
+
+        <p class="mt-6 text-sm text-center text-gray-600">
           Already have an account?
-          <router-link to="/login" class="text-green-600">Login</router-link>
+          <router-link to="/login" class="text-indigo-600 font-semibold hover:text-purple-600 transition-colors ml-1">
+            Sign in instead
+          </router-link>
         </p>
       </form>
     </div>
