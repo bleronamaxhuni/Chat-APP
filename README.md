@@ -36,6 +36,32 @@ A modern, real-time chat application built with Laravel and Vue.js, featuring me
 - Change password
 - View user status (online/offline, last seen)
 
+## Screenshots
+
+### Login/Register
+![Login/Register](docs/sc_readme/Login:Register.png)
+
+### Main Chat App View
+![Chat App View](docs/sc_readme/ChatApp-View.png)
+
+### Conversations
+![Conversation View](docs/sc_readme/Conversation-view.png)
+
+### Real-time Messaging
+![Real-time Messages](docs/sc_readme/Real-time-messages.png)
+
+### Chats Between Friends
+![Chats Between Two Friends](docs/sc_readme/Chats-between-two-friends.png)
+
+### Real-time Notifications
+![Real-time Notifications](docs/sc_readme/Real-time-notifications.png)
+
+### Friend Request Notifications
+![Real-time Requests Sent Notification](docs/sc_readme/Real-time-requests-sent-notification.png)
+
+### Friend Accepted Notifications
+![Real-time Friends Accepted Notification](docs/sc_readme/Real-time-friends-accepted-notification.png)
+
 ## Tech Stack
 
 ### Backend
